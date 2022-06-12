@@ -1,16 +1,14 @@
 package com.example.pokedex.ui.detailpokemon;
 
-import static android.content.ContentValues.TAG;
-
 import android.os.Bundle;
 
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +50,6 @@ public class DetailPokemonFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     int id = requireArguments().getInt(Constant.EXTRA_POKEMON_ID);
-    Log.d(TAG, "onViewCreated: " + id);
     showDetailPokemon(id);
     binding.icBack.setOnClickListener(view1 -> {
       Navigation.findNavController(requireView()).navigateUp();
@@ -71,7 +68,6 @@ public class DetailPokemonFragment extends Fragment {
               } else {
                 binding.tvCatchPokemon.setText("Catch!");
               }
-              Log.d(TAG, "caughtPokemon: " + detailPokemonEntityResource.data.isCaught());
               binding.ivCatch.setOnClickListener(view -> {
                 Random random = new Random();
                 int randomNumber = random.nextInt(3 - 1) + 1;
@@ -79,7 +75,7 @@ public class DetailPokemonFragment extends Fragment {
                   if (randomNumber == 1) {
                     dialog = new BaseDialog(requireContext(), R.layout.fragment_bottom_dialog);
                     dialog.show();
-                    dialog.updateText(new BaseDialog.DialogCallback() {
+                    dialog.setNickname(new BaseDialog.DialogCallback() {
                       @Override public void onDialogShow(@NonNull String text) {
                         viewModel.setCaughtPokemon(text);
                         dialog.dismiss();
@@ -93,7 +89,7 @@ public class DetailPokemonFragment extends Fragment {
                   }
                 } else {
                   Snackbar.make(view, "You Released a Pokemon", Snackbar.LENGTH_SHORT).show();
-                  viewModel.setCaughtPokemon(" ");
+                  viewModel.setCaughtPokemon("");
                 }
               });
             }
@@ -117,7 +113,14 @@ public class DetailPokemonFragment extends Fragment {
                     + id
                     + ".png")
                 .into(binding.ivPokemon);
-            binding.tvPokemonName.setText(detailPokemonResponse.data.getName());
+            String name =
+                detailPokemonResponse.data.getNickname() == null
+                    || detailPokemonResponse.data.getNickname().equals("")
+                    ? detailPokemonResponse.data.getName() :
+                    detailPokemonResponse.data.getNickname();
+            Log.d("TAG", "showDetailPokemon: " + detailPokemonResponse.data.getNickname());
+            Log.d("TAG", "showDetailPokemon: " + detailPokemonResponse.data.getName());
+            binding.tvPokemonName.setText(name);
             binding.tvPokemonHeight.setText(
                 Helper.getHeight(detailPokemonResponse.data.getHeight()));
             binding.tvPokemonWeight.setText(

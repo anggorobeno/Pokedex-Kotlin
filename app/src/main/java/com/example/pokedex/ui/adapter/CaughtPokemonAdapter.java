@@ -58,8 +58,12 @@ public class CaughtPokemonAdapter extends RecyclerView.Adapter<CaughtPokemonAdap
             this.binding = binding;
         }
         private void bind(DetailPokemonEntity pokemon){
-
-            binding.tvPokemonName.setText(pokemon.getName());
+            String name =
+                pokemon.getNickname() == null
+                    || pokemon.getNickname().equals("")
+                    ? pokemon.getName() :
+                    pokemon.getNickname();
+            binding.tvPokemonName.setText(name);
             Glide.with(itemView)
                     .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+pokemon.getId()+".png")
                     .into(binding.ivPokemon);

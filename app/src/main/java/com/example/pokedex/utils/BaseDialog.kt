@@ -29,7 +29,7 @@ class BaseDialog(val context: Context, contentView: Int) {
     fun onDialogShow(text: String)
   }
 
-  fun updateText(listener: DialogCallback) {
+  fun setNickname(listener: DialogCallback) {
     saveButtonListener = listener
     if (binding.tvInputUsername.text != null || binding.tvInputUsername.text.toString()
         .isNotEmpty() || binding.tvInputUsername.text.toString().isNotBlank()

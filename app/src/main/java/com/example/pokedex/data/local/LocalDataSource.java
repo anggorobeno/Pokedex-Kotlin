@@ -25,15 +25,11 @@ public class LocalDataSource {
 
   public void setCaughtPokemon(DetailPokemonEntity pokemonEntity, boolean newState,
       String nickname) {
-    String oldName = pokemonEntity.getName();
-    String newName = oldName;
-
+    String name = pokemonEntity.getName();
     if (nickname.isEmpty() || nickname.equals(" ")) {
-      pokemonEntity.setName(oldName);
+      pokemonEntity.setName(name);
     }
-    else newName = nickname;
     pokemonEntity.setNickname(nickname);
-    pokemonEntity.setName(newName);
     pokemonEntity.setCaught(newState);
     pokemonDao.update(pokemonEntity);
   }

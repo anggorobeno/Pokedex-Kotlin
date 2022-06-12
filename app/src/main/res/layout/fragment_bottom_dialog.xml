@@ -19,6 +19,9 @@
       />
   <com.google.android.material.textfield.TextInputLayout
       android:layout_width="match_parent"
+      app:boxCornerRadiusTopStart="8dp"
+      app:boxCornerRadiusTopEnd="8dp"
+      app:expandedHintEnabled="false"
       android:layout_height="wrap_content"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -26,6 +29,7 @@
       >
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/tv_input_username"
+        android:hint="Leave blank for default"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
