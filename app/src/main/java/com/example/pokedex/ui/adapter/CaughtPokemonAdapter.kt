@@ -1,75 +1,63 @@
-package com.example.pokedex.ui.adapter;
+package com.example.pokedex.ui.adapter
 
-import static android.content.ContentValues.TAG;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import androidx.recyclerview.widget.RecyclerView
+import com.example.pokedex.data.local.entity.DetailPokemonEntity
+import android.view.ViewGroup
+import android.view.LayoutInflater
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.bumptech.glide.Glide
+import com.example.pokedex.databinding.PokemonListBinding
+import com.example.pokedex.ui.adapter.CaughtPokemonAdapter.ViewHolder
+import java.util.ArrayList
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class CaughtPokemonAdapter : Adapter<ViewHolder>() {
+  private val listPokemon = ArrayList<DetailPokemonEntity>()
+  fun setListPokemon(listPokemon: List<DetailPokemonEntity>) {
+    this.listPokemon.clear()
+    this.listPokemon.addAll(listPokemon)
+    notifyDataSetChanged()
+  }
 
-import com.bumptech.glide.Glide;
-import com.example.pokedex.data.local.entity.DetailPokemonEntity;
-import com.example.pokedex.databinding.PokemonListBinding;
+  private var onItemClickCallback: OnItemClickCallback? = null
+  fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback?) {
+    this.onItemClickCallback = onItemClickCallback
+  }
 
-import java.util.ArrayList;
-import java.util.List;
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    val binding = PokemonListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    return ViewHolder(binding)
+  }
 
-public class CaughtPokemonAdapter extends RecyclerView.Adapter<CaughtPokemonAdapter.ViewHolder> {
-    private ArrayList<DetailPokemonEntity> listPokemon = new ArrayList<>();
-    public void setListPokemon(List<DetailPokemonEntity> listPokemon){
-        Log.d(TAG, "setListPokemon: " + String.valueOf(listPokemon));
-        if (listPokemon == null) return;
-        this.listPokemon.clear();
-        this.listPokemon.addAll(listPokemon);
-        notifyDataSetChanged();
+  override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    holder.bind(listPokemon[position])
+    holder.itemView.setOnClickListener { view: View? ->
+      onItemClickCallback!!.onItemClicked(
+        listPokemon[holder.bindingAdapterPosition]
+      )
     }
+  }
 
-    private OnItemClickCallback onItemClickCallback;
+  override fun getItemCount(): Int {
+    return listPokemon.size
+  }
 
-    public void setOnItemClickCallback(OnItemClickCallback onItemClickCallback) {
-        this.onItemClickCallback = onItemClickCallback;
+  inner class ViewHolder(var binding: PokemonListBinding) : RecyclerView.ViewHolder(
+    binding.root
+  ) {
+    fun bind(pokemon: DetailPokemonEntity) {
+      val name = if (pokemon.nickname == null
+        || pokemon.nickname == ""
+      ) pokemon.name else pokemon.nickname!!
+      binding.tvPokemonName.text = name
+      Glide.with(itemView)
+        .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemon.id + ".png")
+        .into(binding.ivPokemon)
     }
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        PokemonListBinding binding = PokemonListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new ViewHolder(binding);
-    }
+  }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(listPokemon.get(position));
-        holder.itemView.setOnClickListener(view -> onItemClickCallback.onItemClicked(listPokemon.get(holder.getBindingAdapterPosition())));
-
-        }
-
-    @Override
-    public int getItemCount() {
-        return listPokemon.size();
-
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        PokemonListBinding binding;
-        public ViewHolder(@NonNull PokemonListBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
-        }
-        private void bind(DetailPokemonEntity pokemon){
-            String name =
-                pokemon.getNickname() == null
-                    || pokemon.getNickname().equals("")
-                    ? pokemon.getName() :
-                    pokemon.getNickname();
-            binding.tvPokemonName.setText(name);
-            Glide.with(itemView)
-                    .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+pokemon.getId()+".png")
-                    .into(binding.ivPokemon);
-        }
-    }
-    public interface OnItemClickCallback {
-        void onItemClicked(DetailPokemonEntity data);
-    }
+  interface OnItemClickCallback {
+    fun onItemClicked(data: DetailPokemonEntity?)
+  }
 }

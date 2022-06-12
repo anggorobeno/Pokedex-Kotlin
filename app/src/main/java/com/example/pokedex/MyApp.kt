@@ -1,10 +1,9 @@
-package com.example.pokedex;
+package com.example.pokedex
 
-import android.app.Application;
-
-import dagger.hilt.android.HiltAndroidApp;
+import dagger.hilt.android.HiltAndroidApp
+import android.app.Application
 
 @HiltAndroidApp
-public class MyApp extends Application {
+class MyApp : Application(){
 
 }

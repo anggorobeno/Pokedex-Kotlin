@@ -1,121 +1,97 @@
-package com.example.pokedex.data;
+package com.example.pokedex.data
 
-import static android.content.ContentValues.TAG;
+import javax.inject.Inject
+import com.example.pokedex.data.remote.RemoteDataSource
+import com.example.pokedex.data.local.LocalDataSource
+import com.example.pokedex.utils.AppExecutors
+import androidx.lifecycle.LiveData
+import com.example.pokedex.data.local.entity.PokemonEntity
+import com.example.pokedex.data.remote.response.PokemonResponse
+import com.example.pokedex.data.remote.network.ApiResponse
+import com.example.pokedex.data.local.entity.DetailPokemonEntity
+import com.example.pokedex.data.remote.response.DetailPokemonResponse
+import android.content.ContentValues
+import android.util.Log
+import com.example.pokedex.utils.Resource
+import java.util.ArrayList
 
-import android.util.Log;
-
-import androidx.lifecycle.LiveData;
-
-import com.example.pokedex.data.local.LocalDataSource;
-import com.example.pokedex.data.local.entity.DetailPokemonEntity;
-import com.example.pokedex.data.local.entity.PokemonEntity;
-import com.example.pokedex.data.remote.RemoteDataSource;
-import com.example.pokedex.data.remote.network.ApiResponse;
-import com.example.pokedex.data.remote.response.DetailPokemonResponse;
-import com.example.pokedex.data.remote.response.PokemonResponse;
-import com.example.pokedex.data.remote.response.ResultsItem;
-import com.example.pokedex.utils.AppExecutors;
-import com.example.pokedex.utils.Resource;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-public class PokemonRepository implements IPokemonRepository {
-  private RemoteDataSource remoteDataSource;
-  private LocalDataSource localDataSource;
-  private AppExecutors appExecutors;
-
-  @Inject
-  public PokemonRepository(RemoteDataSource remoteDataSource, LocalDataSource localDataSource,
-      AppExecutors appExecutors) {
-    this.remoteDataSource = remoteDataSource;
-    this.localDataSource = localDataSource;
-    this.appExecutors = appExecutors;
-  }
-
-  @Override
-  public LiveData<Resource<List<PokemonEntity>>> getPokemonList() {
-    return new NetworkBoundResource<List<PokemonEntity>, PokemonResponse>(appExecutors) {
-      @Override
-      protected LiveData<List<PokemonEntity>> loadFromDB() {
-        return localDataSource.getListPokemon();
+open class PokemonRepository @Inject constructor(
+  private val remoteDataSource: RemoteDataSource, private val localDataSource: LocalDataSource,
+  private val appExecutors: AppExecutors
+) : IPokemonRepository {
+  override fun listPokemon(): LiveData<Resource<List<PokemonEntity>>> =
+    object : NetworkBoundResource<List<PokemonEntity>, PokemonResponse>(
+      appExecutors
+    ) {
+      override fun loadFromDB(): LiveData<List<PokemonEntity>> {
+        return localDataSource.listPokemon
       }
 
-      @Override
-      protected Boolean shouldFetch(List<PokemonEntity> data) {
-        return (data == null) || (data.size() == 0);
+      override fun shouldFetch(data: List<PokemonEntity>?): Boolean {
+        return data!!.isEmpty()
       }
 
-      @Override
-      protected LiveData<ApiResponse<PokemonResponse>> createCall() {
-        return remoteDataSource.getListPokemon();
+      override fun createCall(): LiveData<ApiResponse<PokemonResponse>> {
+        return remoteDataSource.listPokemon
       }
 
-      @Override
-      protected void saveCallResult(PokemonResponse data) {
-        ArrayList<PokemonEntity> pokemonList = new ArrayList<>();
-        for (ResultsItem response : data.getResults()) {
-          PokemonEntity pokemon = new PokemonEntity(
-              0,
-              false,
-              response.getName(),
-              response.getUrl());
-
-          pokemonList.add(pokemon);
-        }
-
-        localDataSource.insertPokemon(pokemonList);
-      }
-    }.asLiveData();
-  }
-
-  @Override
-  public LiveData<Resource<DetailPokemonEntity>> getDetailPokemon(int id) {
-    return new NetworkBoundResource<DetailPokemonEntity, DetailPokemonResponse>(appExecutors) {
-      @Override
-      protected LiveData<DetailPokemonEntity> loadFromDB() {
-        return localDataSource.getDetailPokemon(id);
-      }
-
-      @Override
-      protected Boolean shouldFetch(DetailPokemonEntity data) {
-        return data == null;
-      }
-
-      @Override
-      protected LiveData<ApiResponse<DetailPokemonResponse>> createCall() {
-        Log.d(TAG, "createCall: " + id);
-        return remoteDataSource.getDetailPokemon(id);
-      }
-
-      @Override
-      protected void saveCallResult(DetailPokemonResponse data) {
-        List<DetailPokemonEntity> pokemonEntities = new ArrayList<>();
-        DetailPokemonEntity pokemon = new DetailPokemonEntity(
+      override fun saveCallResult(data: PokemonResponse?) {
+        val pokemonList = ArrayList<PokemonEntity>()
+        for ((name, url) in data?.results!!) {
+          val pokemon = PokemonEntity(
+            0,
             false,
-            data.getId(),
-            data.getName(),
-            data.getHeight(),
-            data.getWeight(),
-            data.getUrl()
-        );
-        pokemonEntities.add(pokemon);
-        localDataSource.insertPokemonDetail(pokemonEntities);
+            name!!,
+            url!!
+          )
+          pokemonList.add(pokemon)
+        }
+        localDataSource.insertPokemon(pokemonList)
       }
-    }.asLiveData();
+    }.asLiveData()
+
+
+  override fun getDetailPokemon(id: Int): LiveData<Resource<DetailPokemonEntity>> {
+    return object : NetworkBoundResource<DetailPokemonEntity, DetailPokemonResponse>(
+      appExecutors
+    ) {
+      override fun loadFromDB(): LiveData<DetailPokemonEntity> {
+        return localDataSource.getDetailPokemon(id)
+      }
+
+      override fun shouldFetch(data: DetailPokemonEntity?): Boolean {
+        return data == null
+      }
+
+      override fun createCall(): LiveData<ApiResponse<DetailPokemonResponse>> {
+        return remoteDataSource.getDetailPokemon(id)
+      }
+
+      override fun saveCallResult(data: DetailPokemonResponse?) {
+        Log.d("TAG", "saveCallResult: $data")
+        val pokemonEntities: MutableList<DetailPokemonEntity> = ArrayList()
+        val pokemon = DetailPokemonEntity(
+          false,
+          data!!.id!!,
+          data.name,
+          data.height,
+          data.weight,
+          data.url,
+        )
+        pokemonEntities.add(pokemon)
+        localDataSource.insertPokemonDetail(pokemonEntities)
+      }
+    }.asLiveData()
   }
 
-  @Override
-  public LiveData<List<DetailPokemonEntity>> getCaughtPokemon() {
-    return localDataSource.getCaughtPokemon();
-  }
+  override val caughtPokemon: LiveData<List<DetailPokemonEntity>>
+    get() = localDataSource.caughtPokemon
 
-  @Override
-  public void setCaughtPokemon(DetailPokemonEntity pokemonEntity, boolean state,
-      String nickname) {
+  override fun setCaughtPokemon(
+    pokemonEntity: DetailPokemonEntity, state: Boolean,
+    nickname: String
+  ) {
     appExecutors.diskIO()
-        .execute(() -> localDataSource.setCaughtPokemon(pokemonEntity, state, nickname));
+      .execute { localDataSource.setCaughtPokemon(pokemonEntity, state, nickname) }
   }
 }

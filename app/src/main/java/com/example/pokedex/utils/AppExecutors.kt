@@ -1,55 +1,42 @@
-package com.example.pokedex.utils;
+package com.example.pokedex.utils
 
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Handler
+import androidx.annotation.VisibleForTesting
+import com.example.pokedex.utils.AppExecutors
+import android.os.Looper
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
+class AppExecutors @VisibleForTesting constructor(
+  private val diskIO: Executor,
+  private val networkIO: Executor,
+  private val mainThread: Executor
+) {
+  constructor() : this(
+    Executors.newSingleThreadExecutor(), Executors.newFixedThreadPool(THREAD_COUNT),
+    MainThreadExecutor()
+  )
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+  fun diskIO(): Executor {
+    return diskIO
+  }
 
-public class AppExecutors {
+  fun networkIO(): Executor {
+    return networkIO
+  }
 
-    private static final int THREAD_COUNT = 3;
+  fun mainThread(): Executor {
+    return mainThread
+  }
 
-    private final Executor diskIO;
-
-    private final Executor networkIO;
-
-    private final Executor mainThread;
-
-    @VisibleForTesting
-    public AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread) {
-        this.diskIO = diskIO;
-        this.networkIO = networkIO;
-        this.mainThread = mainThread;
+  private class MainThreadExecutor : Executor {
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
+    override fun execute(command: Runnable) {
+      mainThreadHandler.post(command)
     }
+  }
 
-    public AppExecutors() {
-        this(Executors.newSingleThreadExecutor(), Executors.newFixedThreadPool(THREAD_COUNT),
-                new MainThreadExecutor());
-    }
-
-    public Executor diskIO() {
-        return diskIO;
-    }
-
-    public Executor networkIO() {
-        return networkIO;
-    }
-
-    public Executor mainThread() {
-        return mainThread;
-    }
-
-    private static class MainThreadExecutor implements Executor {
-        private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-
-        @Override
-        public void execute(@NonNull Runnable command) {
-            mainThreadHandler.post(command);
-        }
-    }
-
+  companion object {
+    private const val THREAD_COUNT = 3
+  }
 }

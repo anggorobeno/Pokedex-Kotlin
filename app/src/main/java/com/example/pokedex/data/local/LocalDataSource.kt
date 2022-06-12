@@ -1,52 +1,40 @@
-package com.example.pokedex.data.local;
+package com.example.pokedex.data.local
 
-import android.util.Log;
-import androidx.lifecycle.LiveData;
+import javax.inject.Inject
+import com.example.pokedex.data.local.room.PokemonDao
+import androidx.lifecycle.LiveData
+import com.example.pokedex.data.local.entity.DetailPokemonEntity
+import com.example.pokedex.data.local.entity.PokemonEntity
 
-import com.example.pokedex.data.local.entity.DetailPokemonEntity;
-import com.example.pokedex.data.local.entity.PokemonEntity;
-import com.example.pokedex.data.local.room.PokemonDao;
+class LocalDataSource @Inject constructor(private val pokemonDao: PokemonDao) {
+  val caughtPokemon: LiveData<List<DetailPokemonEntity>>
+    get() = pokemonDao.caughtPokemon
 
-import java.util.List;
-
-import javax.inject.Inject;
-
-public class LocalDataSource {
-  private PokemonDao pokemonDao;
-
-  @Inject
-  public LocalDataSource(PokemonDao pokemonDao) {
-    this.pokemonDao = pokemonDao;
-  }
-
-  public LiveData<List<DetailPokemonEntity>> getCaughtPokemon() {
-    return pokemonDao.getCaughtPokemon();
-  }
-
-  public void setCaughtPokemon(DetailPokemonEntity pokemonEntity, boolean newState,
-      String nickname) {
-    String name = pokemonEntity.getName();
-    if (nickname.isEmpty() || nickname.equals(" ")) {
-      pokemonEntity.setName(name);
+  fun setCaughtPokemon(
+    pokemonEntity: DetailPokemonEntity, newState: Boolean,
+    nickname: String
+  ) {
+    val name = pokemonEntity.name
+    if (nickname.isEmpty() || nickname == " ") {
+      pokemonEntity.name = name
     }
-    pokemonEntity.setNickname(nickname);
-    pokemonEntity.setCaught(newState);
-    pokemonDao.update(pokemonEntity);
+    pokemonEntity.nickname = nickname
+    pokemonEntity.isCaught = newState
+    pokemonDao.update(pokemonEntity)
   }
 
-  public LiveData<List<PokemonEntity>> getListPokemon() {
-    return pokemonDao.getListPokemon();
+  val listPokemon: LiveData<List<PokemonEntity>>
+    get() = pokemonDao.listPokemon
+
+  fun insertPokemon(pokemonEntity: List<PokemonEntity>) {
+    pokemonDao.insertPokemon(pokemonEntity)
   }
 
-  public void insertPokemon(List<PokemonEntity> pokemonEntity) {
-    pokemonDao.insertPokemon(pokemonEntity);
+  fun insertPokemonDetail(pokemonEntities: List<DetailPokemonEntity>) {
+    pokemonDao.insertPokemonDetail(pokemonEntities)
   }
 
-  public void insertPokemonDetail(List<DetailPokemonEntity> pokemonEntities) {
-    pokemonDao.insertPokemonDetail(pokemonEntities);
-  }
-
-  public LiveData<DetailPokemonEntity> getDetailPokemon(int id) {
-    return pokemonDao.getDetailPokemon(id);
+  fun getDetailPokemon(id: Int): LiveData<DetailPokemonEntity> {
+    return pokemonDao.getDetailPokemon(id)
   }
 }

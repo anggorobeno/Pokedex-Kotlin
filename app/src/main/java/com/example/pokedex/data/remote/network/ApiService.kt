@@ -1,21 +1,18 @@
-package com.example.pokedex.data.remote.network;
+package com.example.pokedex.data.remote.network
 
-import com.example.pokedex.data.remote.response.DetailPokemonResponse;
-import com.example.pokedex.data.remote.response.PokemonResponse;
+import retrofit2.http.GET
+import com.example.pokedex.data.remote.response.PokemonResponse
+import com.example.pokedex.data.remote.response.DetailPokemonResponse
+import retrofit2.Call
+import retrofit2.http.Path
+import retrofit2.http.Query
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
+interface ApiService {
+  @GET("api/v2/pokemon") fun getPokemonList(
+    @Query("offset") offset: Int,
+    @Query("limit") limit: Int
+  ): Call<PokemonResponse>
 
-public interface ApiService {
-    @GET("api/v2/pokemon")
-    Call<PokemonResponse> getPokemonList(
-            @Query("offset") int offset,
-            @Query("limit") int limit);
-
-    @GET("api/v2/pokemon/{id}")
-    Call<DetailPokemonResponse> getDetailPokemon(@Path("id") int id);
-
-
+  @GET("api/v2/pokemon/{id}")
+  fun getDetailPokemon(@Path("id") id: Int): Call<DetailPokemonResponse>
 }

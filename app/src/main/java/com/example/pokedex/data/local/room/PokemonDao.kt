@@ -1,37 +1,34 @@
-package com.example.pokedex.data.local.room;
+package com.example.pokedex.data.local.room
 
-import androidx.lifecycle.LiveData;
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
-import com.example.pokedex.data.local.entity.DetailPokemonEntity;
-import com.example.pokedex.data.local.entity.PokemonEntity;
-
-import java.util.List;
+import androidx.room.Dao
+import androidx.lifecycle.LiveData
+import androidx.room.Insert
+import com.example.pokedex.data.local.entity.DetailPokemonEntity
+import androidx.room.Update
+import com.example.pokedex.data.local.entity.PokemonEntity
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
 @Dao
-public interface PokemonDao {
-    @Query("SELECT * FROM detail_pokemon_table WHERE caught = 1")
-    LiveData<List<DetailPokemonEntity>> getCaughtPokemon();
+interface PokemonDao {
+  @get:Query("SELECT * FROM detail_pokemon_table WHERE caught = 1")
+  val caughtPokemon: LiveData<List<DetailPokemonEntity>>
 
-    @Update
-    void updatePokemon(PokemonEntity pokemonEntity);
+  @Update
+  fun updatePokemon(pokemonEntity: PokemonEntity)
 
-    @Query("SELECT * FROM list_pokemon_table")
-    LiveData<List<PokemonEntity>> getListPokemon();
+  @get:Query("SELECT * FROM list_pokemon_table")
+  val listPokemon: LiveData<List<PokemonEntity>>
 
-    @Query("SELECT * FROM detail_pokemon_table WHERE id = :id")
-    LiveData<DetailPokemonEntity> getDetailPokemon(int id);
+  @Query("SELECT * FROM detail_pokemon_table WHERE id = :id")
+  fun getDetailPokemon(id: Int): LiveData<DetailPokemonEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertPokemon(List<PokemonEntity> pokemonEntities);
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  fun insertPokemon(pokemonEntities: List<PokemonEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertPokemonDetail(List<DetailPokemonEntity> pokemonEntities);
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  fun insertPokemonDetail(pokemonEntities: List<DetailPokemonEntity>)
 
-    @Update
-    void update(DetailPokemonEntity pokemonEntity);
+  @Update
+  fun update(pokemonEntity: DetailPokemonEntity)
 }

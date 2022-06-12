@@ -1,5 +1,5 @@
-package com.example.pokedex.utils;
+package com.example.pokedex.utils
 
-public class Constant {
-    public static final String EXTRA_POKEMON_ID = "pokemon_id";
+object Constant {
+  const val EXTRA_POKEMON_ID = "pokemon_id"
 }

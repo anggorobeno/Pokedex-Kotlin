@@ -1,39 +1,23 @@
-package com.example.pokedex.data.remote.network;
+package com.example.pokedex.data.remote.network
 
-import static com.example.pokedex.data.remote.network.StatusResponse.EMPTY;
-import static com.example.pokedex.data.remote.network.StatusResponse.ERROR;
-import static com.example.pokedex.data.remote.network.StatusResponse.SUCCESS;
+import com.example.pokedex.data.remote.network.StatusResponse
+import com.example.pokedex.data.remote.network.ApiResponse
+import com.example.pokedex.data.remote.network.StatusResponse.EMPTY
+import com.example.pokedex.data.remote.network.StatusResponse.ERROR
+import com.example.pokedex.data.remote.network.StatusResponse.SUCCESS
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public class ApiResponse<T> {
-
-    @NonNull
-    public final StatusResponse status;
-
-    @Nullable
-    public final String message;
-
-    @Nullable
-    public final T body;
-
-    public ApiResponse(@NonNull StatusResponse status, @Nullable T body, @Nullable String message) {
-        this.status = status;
-        this.body = body;
-        this.message = message;
+class ApiResponse<T>(val status: StatusResponse, val body: T?, val message: String?) {
+  companion object {
+    fun <T> success(body: T): ApiResponse<T> {
+      return ApiResponse(SUCCESS, body, null)
     }
 
-    public static <T> ApiResponse<T> success(@Nullable T body) {
-        return new ApiResponse<>(SUCCESS, body, null);
+    fun <T> empty(msg: String, body: T?): ApiResponse<T> {
+      return ApiResponse(EMPTY, body, msg)
     }
 
-    public static <T> ApiResponse<T> empty(String msg, @Nullable T body) {
-        return new ApiResponse<>(EMPTY, body, msg);
+    fun <T> error(msg: String, body: T?): ApiResponse<T> {
+      return ApiResponse(ERROR, body, msg)
     }
-
-    public static <T> ApiResponse<T> error(String msg, @Nullable T body) {
-        return new ApiResponse<>(ERROR, body, msg);
-    }
-
+  }
 }

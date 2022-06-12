@@ -1,88 +1,75 @@
-package com.example.pokedex.data;
+package com.example.pokedex.data
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
+import com.example.pokedex.utils.AppExecutors
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.LiveData
+import com.example.pokedex.data.remote.network.ApiResponse
+import com.example.pokedex.data.remote.network.StatusResponse
+import com.example.pokedex.data.remote.network.StatusResponse.EMPTY
+import com.example.pokedex.data.remote.network.StatusResponse.ERROR
+import com.example.pokedex.data.remote.network.StatusResponse.SUCCESS
+import com.example.pokedex.utils.Resource
 
-import com.example.pokedex.data.remote.network.ApiResponse;
-import com.example.pokedex.utils.AppExecutors;
-import com.example.pokedex.utils.Resource;
-
-public abstract class NetworkBoundResource<ResultType, RequestType> {
-
-    private MediatorLiveData<Resource<ResultType>> result = new MediatorLiveData<>();
-
-    private AppExecutors mExecutors;
-
-
-    public NetworkBoundResource(AppExecutors appExecutors) {
-
-        this.mExecutors = appExecutors;
-        result.setValue(Resource.loading(null));
-
-        LiveData<ResultType> dbSource = loadFromDB();
-
-        result.addSource(dbSource, data -> {
-            result.removeSource(dbSource);
-            if (shouldFetch(data)) {
-                fetchFromNetwork(dbSource);
-            } else {
-                result.addSource(dbSource, newData -> result.setValue(Resource.success(newData)));
-            }
-        });
+abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecutors: AppExecutors) {
+  private val result = MediatorLiveData<Resource<ResultType>>()
+  protected fun onFetchFailed() {}
+  protected abstract fun loadFromDB(): LiveData<ResultType>
+  protected abstract fun shouldFetch(data: ResultType?): Boolean
+  protected abstract fun createCall(): LiveData<ApiResponse<RequestType>>
+  protected abstract fun saveCallResult(data: RequestType?)
+  private fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
+    val apiResponse = createCall()
+    result.addSource(
+      dbSource
+    ) { newData: ResultType -> result.setValue(Resource.loading(newData)) }
+    result.addSource(apiResponse) { response: ApiResponse<RequestType> ->
+      result.removeSource(apiResponse)
+      result.removeSource(dbSource)
+      when (response.status) {
+        SUCCESS -> mExecutors.diskIO().execute {
+          saveCallResult(response.body)
+          mExecutors.mainThread().execute {
+            result.addSource(
+              loadFromDB()
+            ) { newData: ResultType -> result.setValue(Resource.success(newData)) }
+          }
+        }
+        EMPTY -> mExecutors.mainThread().execute {
+          result.addSource(
+            loadFromDB()
+          ) { newData: ResultType -> result.setValue(Resource.success(newData)) }
+        }
+        ERROR -> {
+          onFetchFailed()
+          result.addSource(dbSource) { newData: ResultType ->
+            result.setValue(
+              response.message?.let {
+                Resource.error(
+                  it,
+                  newData
+                )
+              }
+            )
+          }
+        }
+      }
     }
+  }
 
-    protected void onFetchFailed() {
+  fun asLiveData(): LiveData<Resource<ResultType>> {
+    return result
+  }
+
+  init {
+    result.value = Resource.loading(null)
+    val dbSource = loadFromDB()
+    result.addSource(dbSource) { data: ResultType ->
+      result.removeSource(dbSource)
+      if (shouldFetch(data)) {
+        fetchFromNetwork(dbSource)
+      } else {
+        result.addSource(dbSource) { newData: ResultType -> result.setValue(Resource.success(newData)) }
+      }
     }
-
-    protected abstract LiveData<ResultType> loadFromDB();
-
-    protected abstract Boolean shouldFetch(ResultType data);
-
-    protected abstract LiveData<ApiResponse<RequestType>> createCall();
-
-    protected abstract void saveCallResult(RequestType data);
-
-    private void fetchFromNetwork(LiveData<ResultType> dbSource) {
-
-        LiveData<ApiResponse<RequestType>> apiResponse = createCall();
-
-        result.addSource(dbSource, newData ->
-                result.setValue(Resource.loading(newData))
-        );
-        result.addSource(apiResponse, response -> {
-
-            result.removeSource(apiResponse);
-            result.removeSource(dbSource);
-
-            switch (response.status) {
-                case SUCCESS:
-                    mExecutors.diskIO().execute(() -> {
-
-                        saveCallResult(response.body);
-
-                        mExecutors.mainThread().execute(() ->
-                                result.addSource(loadFromDB(),
-                                        newData -> result.setValue(Resource.success(newData))));
-
-                    });
-                    break;
-
-                case EMPTY:
-                    mExecutors.mainThread().execute(() ->
-                            result.addSource(loadFromDB(),
-                                    newData -> result.setValue(Resource.success(newData))));
-
-                    break;
-                case ERROR:
-                    onFetchFailed();
-                    result.addSource(dbSource, newData ->
-                            result.setValue(Resource.error(response.message, newData)));
-                    break;
-            }
-        });
-    }
-
-    public LiveData<Resource<ResultType>> asLiveData() {
-        return result;
-    }
+  }
 }

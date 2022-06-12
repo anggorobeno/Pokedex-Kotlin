@@ -1,7 +1,7 @@
-package com.example.pokedex.utils;
+package com.example.pokedex.utils
 
-public enum Status {
-    SUCCESS,
-    ERROR,
-    LOADING
+enum class Status {
+  SUCCESS,
+  ERROR,
+  LOADING
 }

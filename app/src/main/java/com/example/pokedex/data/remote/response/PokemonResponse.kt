@@ -1,35 +1,11 @@
-package com.example.pokedex.data.remote.response;
+package com.example.pokedex.data.remote.response
 
-import java.util.List;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
+import com.example.pokedex.data.remote.response.ResultsItem
 
-public class PokemonResponse{
-
-	@SerializedName("next")
-	private String next;
-
-	@SerializedName("previous")
-	private Object previous;
-
-	@SerializedName("count")
-	private int count;
-
-	@SerializedName("results")
-	private List<ResultsItem> results;
-
-	public String getNext(){
-		return next;
-	}
-
-	public Object getPrevious(){
-		return previous;
-	}
-
-	public int getCount(){
-		return count;
-	}
-
-	public List<ResultsItem> getResults(){
-		return results;
-	}
-}
+data class PokemonResponse(
+  @SerializedName("next") val next: String? = null,
+  @SerializedName("previous") val previous: Any? = null,
+  @SerializedName("count") val count: Int = 0,
+  @SerializedName("results") val results: List<ResultsItem>? = null,
+)

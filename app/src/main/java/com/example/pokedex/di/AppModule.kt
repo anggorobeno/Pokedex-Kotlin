@@ -1,81 +1,67 @@
-package com.example.pokedex.di;
+package com.example.pokedex.di
 
-
-import android.content.Context;
-
-import com.example.pokedex.BuildConfig;
-import com.example.pokedex.data.local.room.PokemonDB;
-import com.example.pokedex.data.local.room.PokemonDao;
-import com.example.pokedex.data.remote.network.ApiService;
-import com.example.pokedex.utils.AppExecutors;
-
-import dagger.Module;
-import dagger.Provides;
-import dagger.hilt.InstallIn;
-import dagger.hilt.android.qualifiers.ApplicationContext;
-import dagger.hilt.components.SingletonComponent;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import android.content.Context
+import com.example.pokedex.BuildConfig
+import com.example.pokedex.data.local.room.PokemonDB.Companion.getInstance
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import com.example.pokedex.di.AppModule
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import com.example.pokedex.data.remote.network.ApiService
+import dagger.hilt.android.qualifiers.ApplicationContext
+import com.example.pokedex.data.local.room.PokemonDB
+import com.example.pokedex.data.local.room.PokemonDao
+import com.example.pokedex.utils.AppExecutors
+import dagger.Module
+import dagger.Provides
+import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
+import retrofit2.Retrofit.Builder
 
 @Module
-@InstallIn(SingletonComponent.class)
+@InstallIn(SingletonComponent::class)
+object AppModule {
+  private const val BASE_URL = "https://pokeapi.co/"
+   @Provides fun provideBaseUrl(): String {
+    return BASE_URL
+  }
 
-public class AppModule {
-    public static final String BASE_URL = "https://pokeapi.co/";
-
-    @Provides
-    static String provideBaseUrl() {
-        return BASE_URL;
+   @Provides fun provideOkHttpClient(): OkHttpClient {
+    return if (BuildConfig.DEBUG) {
+      val httpLoggingInterceptor = HttpLoggingInterceptor()
+      httpLoggingInterceptor.setLevel(BODY)
+      OkHttpClient.Builder()
+        .addInterceptor(httpLoggingInterceptor)
+        .build()
+    } else {
+      OkHttpClient.Builder()
+        .build()
     }
+  }
 
-    @Provides
-    static OkHttpClient provideOkHttpClient() {
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-            httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            return new OkHttpClient.Builder()
-                    .addInterceptor(httpLoggingInterceptor)
-                    .build();
-        } else {
-            return new OkHttpClient.Builder()
-                    .build();
-        }
+   @Provides fun provideRetrofit(client: OkHttpClient): Retrofit {
+    return Builder()
+      .baseUrl(BASE_URL)
+      .addConverterFactory(GsonConverterFactory.create())
+      .client(client)
+      .build()
+  }
 
+   @Provides fun provideApiService(retrofit: Retrofit): ApiService {
+    return retrofit.create(ApiService::class.java)
+  }
 
-    }
+   @Provides fun provideDatabase(@ApplicationContext context: Context): PokemonDB {
+    return getInstance(context)
+  }
 
-    @Provides
-    static Retrofit provideRetrofit(OkHttpClient client) {
-        return new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
-    }
+   @Provides fun provideDao(db: PokemonDB): PokemonDao {
+    return db.pokemonDao()
+  }
 
-    @Provides
-    static ApiService provideApiService(Retrofit retrofit) {
-        return retrofit.create(ApiService.class);
-    }
-
-    @Provides
-    static PokemonDB provideDatabase(@ApplicationContext Context context){
-        return PokemonDB.getInstance(context);
-    }
-
-    @Provides
-    static PokemonDao provideDao(PokemonDB db){
-        return db.pokemonDao();
-    }
-
-    @Provides
-    static AppExecutors provideAppExecutors(){
-        return new AppExecutors();
-    }
-
-
-
-
+   @Provides fun provideAppExecutors(): AppExecutors {
+    return AppExecutors()
+  }
 }
