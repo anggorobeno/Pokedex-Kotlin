@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.pokedex.ui.listpokemon.PokemonFragment"
+        android:label="@string/title_home"
+        >
+        <action
+            android:id="@+id/action_homeFragment_to_detailPokemonFragment"
+            app:destination="@id/detailPokemonFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/savedPokemon"
+        android:name="com.example.pokedex.ui.caughtpokemon.CaughtPokemonFragment"
+        android:label="Saved Pokemon"
+         >
+        <action
+            android:id="@+id/action_savedPokemon_to_detailPokemonFragment"
+            app:destination="@id/detailPokemonFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchPokemon"
+        android:name="com.example.pokedex.ui.searchpokemon.SearchPokemonFragment"
+        android:label="Search Pokemon"
+         >
+        <action
+            android:id="@+id/action_searchPokemon_to_detailPokemonFragment"
+            app:destination="@id/detailPokemonFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailPokemonFragment"
+        android:name="com.example.pokedex.ui.detailpokemon.DetailPokemonFragment"
+        android:label="fragment_detail_pokemon"
+         />
+</navigation>

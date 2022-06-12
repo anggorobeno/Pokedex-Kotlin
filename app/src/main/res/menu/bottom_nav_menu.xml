@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/baseline_home_black_24dp"
+        android:title="Home" />
+    <item
+        android:id="@+id/savedPokemon"
+        android:icon="@drawable/ic_pokeball"
+        android:title="Your Pokemon" />
+    <item
+        android:id="@+id/searchPokemon"
+        android:icon="@drawable/baseline_search_black_24dp"
+        android:title="Search Pokemon" />
+
+</menu>
