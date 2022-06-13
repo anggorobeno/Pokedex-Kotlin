@@ -3,15 +3,13 @@ package com.example.pokedex.ui.adapter
 import com.example.pokedex.utils.Helper.getIdFromUrl
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokedex.data.local.entity.PokemonEntity
-import android.content.ContentValues
-import android.util.Log
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import com.bumptech.glide.Glide
 import com.example.pokedex.databinding.PokemonListBinding
 import com.example.pokedex.ui.adapter.PokemonAdapter.ViewHolder
+import com.example.pokedex.utils.ImageUtil
 import java.util.ArrayList
 
 class PokemonAdapter : Adapter<ViewHolder>() {
@@ -22,7 +20,6 @@ class PokemonAdapter : Adapter<ViewHolder>() {
   }
 
   fun setListPokemon(listPokemon: List<PokemonEntity>?) {
-    Log.d(ContentValues.TAG, "setListPokemon: " + listPokemon.toString())
     if (listPokemon == null) return
     this.listPokemon.clear()
     this.listPokemon.addAll(listPokemon)
@@ -53,9 +50,15 @@ class PokemonAdapter : Adapter<ViewHolder>() {
     fun bind(pokemon: PokemonEntity) {
       val id = getIdFromUrl(pokemon.url)
       binding.tvPokemonName.text = pokemon.name
-      Glide.with(itemView)
-        .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png")
-        .into(binding.ivPokemon)
+      ImageUtil.generateImageBackgroundPalette(
+        itemView.context,
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+        binding.ivPokemon,
+        binding.ivPokeball
+      )
+//      Glide.with(itemView)
+//        .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png")
+//        .into(binding.ivPokemon)
     }
   }
 

@@ -1,15 +1,14 @@
 package com.example.pokedex.ui.adapter
 
-
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokedex.data.local.entity.DetailPokemonEntity
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import com.bumptech.glide.Glide
 import com.example.pokedex.databinding.PokemonListBinding
 import com.example.pokedex.ui.adapter.CaughtPokemonAdapter.ViewHolder
+import com.example.pokedex.utils.ImageUtil
 import java.util.ArrayList
 
 class CaughtPokemonAdapter : Adapter<ViewHolder>() {
@@ -51,9 +50,12 @@ class CaughtPokemonAdapter : Adapter<ViewHolder>() {
         || pokemon.nickname == ""
       ) pokemon.name else pokemon.nickname!!
       binding.tvPokemonName.text = name
-      Glide.with(itemView)
-        .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemon.id + ".png")
-        .into(binding.ivPokemon)
+      ImageUtil.generateImageBackgroundPalette(
+        itemView.context,
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemon.id + ".png",
+        binding.ivPokemon,
+        binding.ivPokeball
+      )
     }
   }
 

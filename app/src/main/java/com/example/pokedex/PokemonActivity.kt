@@ -3,6 +3,7 @@ package com.example.pokedex
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.pokedex.R
 import androidx.navigation.ui.AppBarConfiguration
@@ -18,6 +19,7 @@ class PokemonActivity : AppCompatActivity() {
   private var _binding: ActivityPokemonBinding? = null
   private val binding get() = _binding!!
   override fun onCreate(savedInstanceState: Bundle?) {
+    installSplashScreen()
     super.onCreate(savedInstanceState)
     _binding = ActivityPokemonBinding.inflate(layoutInflater)
     setContentView(binding.root)

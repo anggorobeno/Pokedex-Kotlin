@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <style name="AppTheme" parent="Theme.MaterialComponents.Light"></style>
+
+  <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">#EEEEEE</item>
+    <item name="windowSplashScreenAnimatedIcon">@drawable/ic_app_logo</item>
+    <item name="postSplashScreenTheme">@style/AppTheme</item>
+  </style>
+
+  <style name="MaterialText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+    <item name="boxCornerRadiusBottomEnd">10dp</item>
+    <item name="boxCornerRadiusBottomStart">10dp</item>
+    <item name="boxCornerRadiusTopEnd">10dp</item>
+    <item name="boxCornerRadiusTopStart">10dp</item>
+  </style>
+</resources>

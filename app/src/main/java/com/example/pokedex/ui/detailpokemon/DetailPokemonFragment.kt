@@ -1,5 +1,6 @@
 package com.example.pokedex.ui.detailpokemon
 
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
@@ -19,6 +21,7 @@ import com.example.pokedex.utils.Constant
 import com.example.pokedex.utils.Helper.getHeight
 import com.example.pokedex.utils.Helper.getWeight
 import com.example.pokedex.utils.Helper.idConverter
+import com.example.pokedex.utils.ImageUtil
 import com.example.pokedex.utils.Resource
 import com.example.pokedex.utils.Status.ERROR
 import com.example.pokedex.utils.Status.LOADING
@@ -31,14 +34,12 @@ import java.util.Random
 class DetailPokemonFragment : Fragment() {
   private var _binding: FragmentDetailPokemonBinding? = null
   private val binding get() = _binding!!
-  lateinit var viewModel: DetailPokemonViewModel
+  val viewModel: DetailPokemonViewModel by viewModels()
   private var dialog: BaseDialog? = null
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    // Inflate the layout for this fragment
-    viewModel = ViewModelProvider(this).get(DetailPokemonViewModel::class.java)
     _binding = FragmentDetailPokemonBinding.inflate(inflater, container, false)
     return binding.root
   }
@@ -107,13 +108,12 @@ class DetailPokemonFragment : Fragment() {
           LOADING -> binding.progressBar.visibility = View.VISIBLE
           SUCCESS -> {
             binding.progressBar.visibility = View.GONE
-            Glide.with(requireContext())
-              .load(
-                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
-                    + id
-                    + ".png"
-              )
-              .into(binding.ivPokemon)
+            ImageUtil.generateBackgroundPalette(
+              requireContext(),
+              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+              binding.ivPokemon,
+              binding.actDetail
+            )
             val name = if (detailPokemonResponse.data!!.nickname == null
               || detailPokemonResponse.data.nickname == ""
             ) detailPokemonResponse.data.name else detailPokemonResponse.data.nickname!!
