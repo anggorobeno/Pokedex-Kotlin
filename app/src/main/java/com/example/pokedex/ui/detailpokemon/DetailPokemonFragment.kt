@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
@@ -31,14 +32,12 @@ import java.util.Random
 class DetailPokemonFragment : Fragment() {
   private var _binding: FragmentDetailPokemonBinding? = null
   private val binding get() = _binding!!
-  lateinit var viewModel: DetailPokemonViewModel
+  val viewModel: DetailPokemonViewModel by viewModels()
   private var dialog: BaseDialog? = null
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    // Inflate the layout for this fragment
-    viewModel = ViewModelProvider(this).get(DetailPokemonViewModel::class.java)
     _binding = FragmentDetailPokemonBinding.inflate(inflater, container, false)
     return binding.root
   }
