@@ -1,19 +1,18 @@
 package com.example.pokedex.ui.adapter
 
-import androidx.recyclerview.widget.RecyclerView
-import com.example.pokedex.data.local.entity.DetailPokemonEntity
-import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.example.domain.model.DetailPokemonModel
 import com.example.pokedex.databinding.PokemonListBinding
 import com.example.pokedex.ui.adapter.CaughtPokemonAdapter.ViewHolder
 import com.example.pokedex.utils.ImageUtil
-import java.util.ArrayList
 
 class CaughtPokemonAdapter : Adapter<ViewHolder>() {
-  private val listPokemon = ArrayList<DetailPokemonEntity>()
-  fun setListPokemon(listPokemon: List<DetailPokemonEntity>) {
+  private val listPokemon = ArrayList<DetailPokemonModel>()
+  fun setListPokemon(listPokemon: List<DetailPokemonModel>) {
     this.listPokemon.clear()
     this.listPokemon.addAll(listPokemon)
     notifyDataSetChanged()
@@ -45,7 +44,7 @@ class CaughtPokemonAdapter : Adapter<ViewHolder>() {
   inner class ViewHolder(var binding: PokemonListBinding) : RecyclerView.ViewHolder(
     binding.root
   ) {
-    fun bind(pokemon: DetailPokemonEntity) {
+    fun bind(pokemon: DetailPokemonModel) {
       val name = if (pokemon.nickname == null
         || pokemon.nickname == ""
       ) pokemon.name else pokemon.nickname!!
@@ -60,6 +59,6 @@ class CaughtPokemonAdapter : Adapter<ViewHolder>() {
   }
 
   interface OnItemClickCallback {
-    fun onItemClicked(data: DetailPokemonEntity?)
+    fun onItemClicked(data: DetailPokemonModel?)
   }
 }
