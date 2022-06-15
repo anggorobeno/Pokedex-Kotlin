@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.domain.model.DetailPokemonModel
 import com.example.pokedex.R
-import com.example.pokedex.data.local.entity.DetailPokemonEntity
 import com.example.pokedex.databinding.FragmentCaughtPokemonBinding
 import com.example.pokedex.ui.adapter.CaughtPokemonAdapter
 import com.example.pokedex.ui.adapter.CaughtPokemonAdapter.OnItemClickCallback
@@ -38,7 +38,7 @@ class CaughtPokemonFragment : Fragment() {
   }
 
   private fun getCaughtPokemonList() {
-    viewModel.caughtPokemon.observe(viewLifecycleOwner) { caughtPokemon: List<DetailPokemonEntity> ->
+    viewModel.caughtPokemon.observe(viewLifecycleOwner) { caughtPokemon: List<DetailPokemonModel> ->
       adapter.setListPokemon(caughtPokemon)
       adapter.notifyDataSetChanged()
       showRv()
@@ -50,7 +50,7 @@ class CaughtPokemonFragment : Fragment() {
     binding.recyclerView.setHasFixedSize(true)
     binding.recyclerView.adapter = adapter
     adapter.setOnItemClickCallback(object : OnItemClickCallback {
-      override fun onItemClicked(data: DetailPokemonEntity?) {
+      override fun onItemClicked(data: DetailPokemonModel?) {
         val bundle = Bundle()
         val id = data!!.id.toInt()
         bundle.putInt(Constant.EXTRA_POKEMON_ID, id)

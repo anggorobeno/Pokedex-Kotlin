@@ -3,19 +3,19 @@ package com.example.pokedex.ui.detailpokemon
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.example.pokedex.data.PokemonRepository
+import com.example.domain.usecase.pokemon.PokemonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Random
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailPokemonViewModel @Inject constructor(private val repository: PokemonRepository) :
+class DetailPokemonViewModel @Inject constructor(private val useCase: PokemonUseCase) :
   ViewModel() {
   private val pokemonId = MutableLiveData<Int>()
   var detailPokemon = Transformations.switchMap(
     pokemonId
   ) { mPokemonId: Int? ->
-    repository.getDetailPokemon(
+    useCase.getDetailPokemon(
       mPokemonId!!
     )
   }
@@ -30,7 +30,7 @@ class DetailPokemonViewModel @Inject constructor(private val repository: Pokemon
       val pokemonDetail = resource.data
       if (pokemonDetail != null) {
         val newState = !pokemonDetail.isCaught
-        repository.setCaughtPokemon(pokemonDetail, newState, text)
+        useCase.setCaughtPokemon(pokemonDetail, newState, text)
       }
     }
   }

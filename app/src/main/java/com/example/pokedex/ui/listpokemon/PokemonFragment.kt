@@ -10,16 +10,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.pokedex.R
-import com.example.pokedex.data.local.entity.PokemonEntity
+import com.example.data.local.entity.PokemonEntity
+import com.example.domain.model.PokemonModel
+import com.example.domain.utils.Resource
 import com.example.pokedex.databinding.FragmentPokemonBinding
 import com.example.pokedex.ui.adapter.PokemonAdapter
 import com.example.pokedex.ui.adapter.PokemonAdapter.OnItemClickCallback
 import com.example.pokedex.utils.Constant
 import com.example.pokedex.utils.Helper.getIdFromUrl
-import com.example.pokedex.utils.Resource
-import com.example.pokedex.utils.Status.ERROR
-import com.example.pokedex.utils.Status.LOADING
-import com.example.pokedex.utils.Status.SUCCESS
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,16 +42,16 @@ class PokemonFragment : Fragment() {
   }
 
   private fun getPokemonList() {
-    viewModel!!.listPokemon.observe(viewLifecycleOwner) { pokemonResponse: Resource<List<PokemonEntity>> ->
-      when (pokemonResponse.status) {
-        LOADING -> binding.progressBar.visibility = View.VISIBLE
-        SUCCESS -> {
+    viewModel!!.listPokemon.observe(viewLifecycleOwner) { pokemonResponse ->
+      when (pokemonResponse) {
+        is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
+        is Resource.Success -> {
           binding.progressBar.visibility = View.GONE
           adapter.setListPokemon(pokemonResponse.data)
           adapter.notifyDataSetChanged()
           showRv()
         }
-        ERROR -> {
+        is Resource.Error -> {
           binding.progressBar.visibility = View.GONE
           Toast.makeText(requireContext(), "Error occurred", Toast.LENGTH_SHORT).show()
         }
@@ -66,7 +64,7 @@ class PokemonFragment : Fragment() {
     binding.recyclerView.setHasFixedSize(true)
     binding.recyclerView.adapter = adapter
     adapter.setOnItemClickCallback(object : OnItemClickCallback {
-      override fun onItemClicked(data: PokemonEntity) {
+      override fun onItemClicked(data: PokemonModel) {
         val bundle = Bundle()
         val id = getIdFromUrl(data.url).toInt()
         bundle.putInt(Constant.EXTRA_POKEMON_ID, id)

@@ -2,24 +2,24 @@ package com.example.pokedex.ui.adapter
 
 import com.example.pokedex.utils.Helper.getIdFromUrl
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pokedex.data.local.entity.PokemonEntity
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.example.domain.model.PokemonModel
 import com.example.pokedex.databinding.PokemonListBinding
 import com.example.pokedex.ui.adapter.PokemonAdapter.ViewHolder
 import com.example.pokedex.utils.ImageUtil
 import java.util.ArrayList
 
 class PokemonAdapter : Adapter<ViewHolder>() {
-  private val listPokemon = ArrayList<PokemonEntity>()
+  private val listPokemon = ArrayList<PokemonModel>()
   private var onItemClickCallback: OnItemClickCallback? = null
   fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback?) {
     this.onItemClickCallback = onItemClickCallback
   }
 
-  fun setListPokemon(listPokemon: List<PokemonEntity>?) {
+  fun setListPokemon(listPokemon: List<PokemonModel>?) {
     if (listPokemon == null) return
     this.listPokemon.clear()
     this.listPokemon.addAll(listPokemon)
@@ -47,7 +47,7 @@ class PokemonAdapter : Adapter<ViewHolder>() {
   inner class ViewHolder(private val binding: PokemonListBinding) : RecyclerView.ViewHolder(
     binding.root
   ) {
-    fun bind(pokemon: PokemonEntity) {
+    fun bind(pokemon: PokemonModel) {
       val id = getIdFromUrl(pokemon.url)
       binding.tvPokemonName.text = pokemon.name
       ImageUtil.generateImageBackgroundPalette(
@@ -63,6 +63,6 @@ class PokemonAdapter : Adapter<ViewHolder>() {
   }
 
   interface OnItemClickCallback {
-    fun onItemClicked(data: PokemonEntity)
+    fun onItemClicked(data: PokemonModel)
   }
 }
