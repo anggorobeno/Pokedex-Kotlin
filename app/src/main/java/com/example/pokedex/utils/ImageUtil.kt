@@ -31,7 +31,7 @@ object ImageUtil {
       .into(object : CustomTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
           imageSource.setImageBitmap(resource)
-          val palette = Palette.from(resource).generate().lightMutedSwatch
+          val palette = Palette.from(resource).generate().dominantSwatch
           palette?.rgb?.let {
             targetSource.setBackgroundColor(it)
           }
@@ -54,7 +54,7 @@ object ImageUtil {
       .into(object : CustomTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
           imageSource.setImageBitmap(resource)
-          val palette = Palette.from(resource).generate().lightMutedSwatch
+          val palette = Palette.from(resource).generate().dominantSwatch
           palette?.rgb?.let {
             targetSource.setColorFilter(it)
           }

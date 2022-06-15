@@ -50,7 +50,6 @@ open class PokemonRepository @Inject constructor(
       }
     }.asLiveData()
 
-
   override fun getDetailPokemon(id: Int): LiveData<Resource<DetailPokemonEntity>> {
     return object : NetworkBoundResource<DetailPokemonEntity, DetailPokemonResponse>(
       appExecutors
