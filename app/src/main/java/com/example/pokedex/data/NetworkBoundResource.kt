@@ -25,8 +25,8 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
     result.addSource(apiResponse) { response: ApiResponse<RequestType> ->
       result.removeSource(apiResponse)
       result.removeSource(dbSource)
-      when (response.status) {
-        SUCCESS -> mExecutors.diskIO().execute {
+      when (response) {
+        is ApiResponse.Success -> mExecutors.diskIO().execute {
           saveCallResult(response.body)
           mExecutors.mainThread().execute {
             result.addSource(
@@ -34,12 +34,12 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
             ) { newData: ResultType -> result.setValue(Resource.success(newData)) }
           }
         }
-        EMPTY -> mExecutors.mainThread().execute {
+        is ApiResponse.Empty -> mExecutors.mainThread().execute {
           result.addSource(
             loadFromDB()
           ) { newData: ResultType -> result.setValue(Resource.success(newData)) }
         }
-        ERROR -> {
+        is ApiResponse.Error -> {
           onFetchFailed()
           result.addSource(dbSource) { newData: ResultType ->
             result.setValue(

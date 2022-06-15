@@ -1,15 +1,15 @@
 package com.example.pokedex.data.remote
 
-import javax.inject.Inject
-import com.example.pokedex.data.remote.network.ApiService
 import androidx.lifecycle.LiveData
-import com.example.pokedex.data.remote.network.ApiResponse
-import com.example.pokedex.data.remote.response.PokemonResponse
 import androidx.lifecycle.MutableLiveData
+import com.example.pokedex.data.remote.network.ApiResponse
+import com.example.pokedex.data.remote.network.ApiService
 import com.example.pokedex.data.remote.response.DetailPokemonResponse
+import com.example.pokedex.data.remote.response.PokemonResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
   val listPokemon: LiveData<ApiResponse<PokemonResponse>>
@@ -22,11 +22,13 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
         ) {
           val responseBody = response.body()
           if (response.isSuccessful && responseBody != null) {
-            result.value = ApiResponse.success(responseBody)
-          }
+            result.value = ApiResponse.Success(responseBody)
+          } else result.value = ApiResponse.Empty("Data is empty")
         }
 
-        override fun onFailure(call: Call<PokemonResponse?>, t: Throwable) {}
+        override fun onFailure(call: Call<PokemonResponse?>, t: Throwable) {
+          result.value = t.message?.let { ApiResponse.Error(it) }
+        }
       })
       return result
     }
@@ -40,13 +42,12 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
       ) {
         val responseBody = response.body()
         if (responseBody != null && response.isSuccessful) {
-          result.value = ApiResponse.success(responseBody)
-        }
-        //                else result.setValue(ApiResponse.error(response.message(),null));
+          result.value = ApiResponse.Success(responseBody)
+        } else result.setValue(ApiResponse.Empty(response.message()));
       }
 
       override fun onFailure(call: Call<DetailPokemonResponse?>, t: Throwable) {
-//                result.setValue(ApiResponse);
+        result.value = t.message?.let { ApiResponse.Error(it) }
       }
     })
     return result
