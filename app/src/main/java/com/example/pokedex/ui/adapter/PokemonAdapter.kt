@@ -1,14 +1,22 @@
 package com.example.pokedex.ui.adapter
 
+import android.os.Bundle
 import com.example.pokedex.utils.Helper.getIdFromUrl
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.domain.model.PokemonModel
+import com.example.pokedex.R
 import com.example.pokedex.databinding.PokemonListBinding
 import com.example.pokedex.ui.adapter.PokemonAdapter.ViewHolder
+import com.example.pokedex.utils.Constant
 import com.example.pokedex.utils.ImageUtil
 import java.util.ArrayList
 
@@ -33,11 +41,7 @@ class PokemonAdapter : Adapter<ViewHolder>() {
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     holder.bind(listPokemon[position])
-    holder.itemView.setOnClickListener { view: View? ->
-      onItemClickCallback!!.onItemClicked(
-        listPokemon[holder.bindingAdapterPosition]
-      )
-    }
+
   }
 
   override fun getItemCount(): Int {
@@ -49,6 +53,7 @@ class PokemonAdapter : Adapter<ViewHolder>() {
   ) {
     fun bind(pokemon: PokemonModel) {
       val id = getIdFromUrl(pokemon.url)
+      ViewCompat.setTransitionName(binding.ivPokemon, id)
       binding.tvPokemonName.text = pokemon.name
       ImageUtil.generateImageBackgroundPalette(
         itemView.context,
@@ -56,6 +61,19 @@ class PokemonAdapter : Adapter<ViewHolder>() {
         binding.ivPokemon,
         binding.ivPokeball
       )
+      itemView.setOnClickListener {
+        val bundle = Bundle()
+        bundle.putInt(Constant.EXTRA_POKEMON_ID, id.toInt())
+        val extras =
+          FragmentNavigatorExtras(binding.ivPokemon to id)
+        itemView.findNavController().navigate(
+          R.id.detailPokemonFragment,
+          bundle,
+          null,
+          extras
+        )
+      }
+
 //      Glide.with(itemView)
 //        .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png")
 //        .into(binding.ivPokemon)

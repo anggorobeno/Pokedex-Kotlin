@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.transition.TransitionInflater
 import com.example.domain.model.DetailPokemonModel
 import com.example.domain.utils.Resource
+import com.example.pokedex.R
 import com.example.pokedex.R.layout
 import com.example.pokedex.databinding.FragmentDetailPokemonBinding
 import com.example.pokedex.utils.BaseDialog
@@ -28,6 +31,13 @@ class DetailPokemonFragment : Fragment() {
   private val binding get() = _binding!!
   val viewModel: DetailPokemonViewModel by viewModels()
   private var dialog: BaseDialog? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    sharedElementEnterTransition =
+      TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
@@ -39,6 +49,7 @@ class DetailPokemonFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     val id = requireArguments().getInt(Constant.EXTRA_POKEMON_ID)
+    ViewCompat.setTransitionName(binding.ivPokemon,id.toString())
     showDetailPokemon(id)
     binding.icBack.setOnClickListener {
       Navigation.findNavController(requireView()).navigateUp()
