@@ -10,6 +10,7 @@
         android:title="Your Pokemon" />
     <item
         android:id="@+id/searchPokemon"
+        android:enabled="false"
         android:icon="@drawable/baseline_search_black_24dp"
         android:title="Search Pokemon" />
 

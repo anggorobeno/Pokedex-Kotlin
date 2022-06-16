@@ -41,7 +41,6 @@ class PokemonAdapter : Adapter<ViewHolder>() {
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     holder.bind(listPokemon[position])
-
   }
 
   override fun getItemCount(): Int {
@@ -65,7 +64,7 @@ class PokemonAdapter : Adapter<ViewHolder>() {
         val bundle = Bundle()
         bundle.putInt(Constant.EXTRA_POKEMON_ID, id.toInt())
         val extras =
-          FragmentNavigatorExtras(binding.ivPokemon to id)
+          FragmentNavigatorExtras(binding.ivPokemon to itemView.context.resources.getString(R.string.transition_to_detail))
         itemView.findNavController().navigate(
           R.id.detailPokemonFragment,
           bundle,

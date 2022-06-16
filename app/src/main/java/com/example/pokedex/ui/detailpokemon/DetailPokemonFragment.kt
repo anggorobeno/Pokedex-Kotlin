@@ -48,8 +48,8 @@ class DetailPokemonFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    postponeEnterTransition()
     val id = requireArguments().getInt(Constant.EXTRA_POKEMON_ID)
-    ViewCompat.setTransitionName(binding.ivPokemon,id.toString())
     showDetailPokemon(id)
     binding.icBack.setOnClickListener {
       Navigation.findNavController(requireView()).navigateUp()
@@ -119,6 +119,7 @@ class DetailPokemonFragment : Fragment() {
             binding.progressBar.visibility = View.GONE
             ImageUtil.generateBackgroundPalette(
               requireContext(),
+              this,
               "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
               binding.ivPokemon,
               binding.actDetail

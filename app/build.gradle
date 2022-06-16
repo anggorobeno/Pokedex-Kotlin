@@ -91,4 +91,12 @@ dependencies {
 
     implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
 
+    // Gradient
+    implementation "com.github.skydoves:rainbow:1.0.4"
+
+    //WhatIf
+    implementation "com.github.skydoves:whatif:1.1.1"
+
+    implementation  'io.ak1:bubbletabbar:1.0.8'
+    implementation 'nl.joery.animatedbottombar:library:1.1.0'
 }
