@@ -21,6 +21,7 @@ import com.example.pokedex.ui.adapter.PokemonAdapter.OnItemClickCallback
 import com.example.pokedex.utils.Constant
 import com.example.pokedex.utils.Helper.getIdFromUrl
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class PokemonFragment : Fragment() {
@@ -42,6 +43,15 @@ class PokemonFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     postponeEnterTransition()
     getPokemonList()
+    viewModel!!.getPokemon()
+      .subscribe({
+        Timber.d("$it")
+      }, { error ->
+        Timber.d(error.message)
+      },
+        {
+          Timber.d("Completed")
+        })
   }
 
   private fun getPokemonList() {
@@ -50,6 +60,7 @@ class PokemonFragment : Fragment() {
         is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
         is Resource.Success -> {
           binding.progressBar.visibility = View.GONE
+          Timber.d("Fragment" + pokemonResponse.data.toString())
           adapter.setListPokemon(pokemonResponse.data)
           adapter.notifyDataSetChanged()
           (view?.parent as? ViewGroup)?.doOnPreDraw {
@@ -71,10 +82,10 @@ class PokemonFragment : Fragment() {
     binding.recyclerView.adapter = adapter
     adapter.setOnItemClickCallback(object : OnItemClickCallback {
       override fun onItemClicked(data: PokemonModel) {
-        val bundle = Bundle()
-        val id = getIdFromUrl(data.url).toInt()
-        bundle.putInt(Constant.EXTRA_POKEMON_ID, id)
-        Navigation.findNavController(requireView()).navigate(R.id.detailPokemonFragment, bundle)
+//        val bundle = Bundle()
+//        val id = getIdFromUrl(data.results.).toInt()
+//        bundle.putInt(Constant.EXTRA_POKEMON_ID, id)
+//        Navigation.findNavController(requireView()).navigate(R.id.detailPokemonFragment, bundle)
       }
     })
   }

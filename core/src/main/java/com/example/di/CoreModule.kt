@@ -1,7 +1,6 @@
 package com.example.di
 
 import android.content.Context
-import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.core.BuildConfig
 import com.example.data.local.room.PokemonDB
 import com.example.data.local.room.PokemonDB.Companion.getInstance
@@ -16,6 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.Retrofit.Builder
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
@@ -29,7 +29,6 @@ object CoreModule {
   @Provides fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
     return if (BuildConfig.DEBUG) {
       OkHttpClient.Builder()
-        .addInterceptor(ChuckerInterceptor(context))
         .build()
     } else {
       OkHttpClient.Builder()
@@ -41,6 +40,7 @@ object CoreModule {
     return Builder()
       .baseUrl(BASE_URL)
       .addConverterFactory(GsonConverterFactory.create())
+      .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
       .client(client)
       .build()
   }

@@ -1,46 +1,59 @@
 package com.example.data
 
-import android.util.Log
-import javax.inject.Inject
-import com.example.data.remote.RemoteDataSource
-import com.example.data.local.LocalDataSource
-import com.example.utils.AppExecutors
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.example.data.local.entity.PokemonEntity
-import com.example.data.remote.response.PokemonResponse
-import com.example.data.remote.network.ApiResponse
+import com.example.data.local.LocalDataSource
 import com.example.data.local.entity.DetailPokemonEntity
+import com.example.data.local.entity.PokemonEntity
+import com.example.data.remote.RemoteDataSource
+import com.example.data.remote.network.ApiResponse
+import com.example.data.remote.response.DetailPokemonResponse
+import com.example.data.remote.response.PokemonResponse
 import com.example.domain.model.DetailPokemonModel
 import com.example.domain.model.PokemonModel
-import com.example.data.remote.response.DetailPokemonResponse
+import com.example.domain.model.ResultModel
 import com.example.domain.repository.IPokemonRepository
 import com.example.domain.utils.Resource
-import java.util.ArrayList
+import com.example.utils.AppExecutors
+import io.reactivex.BackpressureStrategy.BUFFER
+import io.reactivex.Flowable
+import timber.log.Timber
+import javax.inject.Inject
 
 open class PokemonRepository @Inject constructor(
   private val remoteDataSource: RemoteDataSource, private val localDataSource: LocalDataSource,
   private val appExecutors: AppExecutors
 ) : IPokemonRepository {
-  override fun listPokemon(): LiveData<Resource<List<PokemonModel>>> =
-    object : NetworkBoundResource<List<PokemonModel>, PokemonResponse>(
+  override fun getListPokemonObservable(): Flowable<PokemonModel> {
+    return remoteDataSource.getListPokemonObservable()
+      .map {
+        PokemonResponse.transform(it)
+      }
+      .toFlowable(BUFFER)
+  }
+
+  override fun listPokemon(): LiveData<Resource<PokemonModel>> =
+    object : NetworkBoundResource<PokemonModel, PokemonResponse>(
       appExecutors
     ) {
-      override fun loadFromDB(): LiveData<List<PokemonModel>> {
-        return Transformations.map(localDataSource.listPokemon) {
-          it.map { item ->
-            PokemonModel(
-              item.id,
-              item.isCaught,
-              item.name,
-              item.url
-            )
+      override fun loadFromDB(): LiveData<PokemonModel> {
+        return Transformations.map(localDataSource.listPokemon) { item ->
+          val transformedList = arrayListOf<ResultModel>()
+          item.forEach {
+            transformedList.add(PokemonEntity.transform(it))
           }
+          Timber.d (message = "a $transformedList")
+          PokemonModel(
+            null,
+            null,
+            0,
+            transformedList
+          )
         }
       }
 
-      override fun shouldFetch(data: List<PokemonModel>?): Boolean {
-        return data!!.isEmpty()
+      override fun shouldFetch(data: PokemonModel?): Boolean {
+        return data!!.results.isEmpty()
       }
 
       override fun createCall(): LiveData<ApiResponse<PokemonResponse>> {
@@ -49,6 +62,7 @@ open class PokemonRepository @Inject constructor(
 
       override fun saveCallResult(data: PokemonResponse?) {
         val pokemonList = ArrayList<PokemonEntity>()
+        Timber.d(data.toString())
         for ((name, url) in data?.results!!) {
           val pokemon = PokemonEntity(
             0,
@@ -139,3 +153,6 @@ open class PokemonRepository @Inject constructor(
       .execute { localDataSource.setCaughtPokemon(entity, state, nickname) }
   }
 }
+
+
+

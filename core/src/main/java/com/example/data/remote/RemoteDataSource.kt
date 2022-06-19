@@ -1,17 +1,31 @@
 package com.example.data.remote
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.data.remote.network.ApiResponse
 import com.example.data.remote.network.ApiService
 import com.example.data.remote.response.DetailPokemonResponse
 import com.example.data.remote.response.PokemonResponse
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
+  fun getListPokemonObservable(): Observable<PokemonResponse> {
+     return apiService.getPokemonListObservable(20, 20)
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+
+  }
+
   val listPokemon: LiveData<ApiResponse<PokemonResponse>>
     get() {
       val result = MutableLiveData<ApiResponse<PokemonResponse>>()
