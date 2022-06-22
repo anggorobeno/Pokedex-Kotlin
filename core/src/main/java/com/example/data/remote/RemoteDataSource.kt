@@ -7,11 +7,15 @@ import com.example.data.remote.network.ApiResponse
 import com.example.data.remote.network.ApiService
 import com.example.data.remote.response.DetailPokemonResponse
 import com.example.data.remote.response.PokemonResponse
+import com.example.domain.model.PokemonModel
+import com.example.domain.utils.Resource
+import io.reactivex.BackpressureStrategy.BUFFER
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,10 +24,9 @@ import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
   fun getListPokemonObservable(): Observable<PokemonResponse> {
-     return apiService.getPokemonListObservable(20, 20)
+    return apiService.getPokemonListObservable(20, 20)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-
   }
 
   val listPokemon: LiveData<ApiResponse<PokemonResponse>>

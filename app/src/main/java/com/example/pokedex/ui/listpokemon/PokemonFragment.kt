@@ -4,37 +4,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.FragmentNavigator
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.pokedex.R
-import com.example.data.local.entity.PokemonEntity
-import com.example.domain.model.PokemonModel
+import com.example.domain.model.ResultModel
 import com.example.domain.utils.Resource
+import com.example.pokedex.R
+import com.example.pokedex.R.string
 import com.example.pokedex.databinding.FragmentPokemonBinding
 import com.example.pokedex.ui.adapter.PokemonAdapter
-import com.example.pokedex.ui.adapter.PokemonAdapter.OnItemClickCallback
 import com.example.pokedex.utils.Constant
 import com.example.pokedex.utils.Helper.getIdFromUrl
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
+import io.reactivex.disposables.CompositeDisposable
 
 @AndroidEntryPoint
 class PokemonFragment : Fragment() {
-  private var viewModel: PokemonViewModel? = null
+  val viewModel: PokemonViewModel by viewModels()
   private var _binding: FragmentPokemonBinding? = null
   private val binding get() = _binding!!
+  private val disposable = CompositeDisposable()
   private val adapter = PokemonAdapter()
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    viewModel = ViewModelProvider(this).get(PokemonViewModel::class.java)
     _binding = FragmentPokemonBinding.inflate(inflater, container, false)
     return binding.root
   }
@@ -43,27 +43,14 @@ class PokemonFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     postponeEnterTransition()
     getPokemonList()
-    viewModel!!.getPokemon()
-      .subscribe({
-        Timber.d("$it")
-      }, { error ->
-        Timber.d(error.message)
-      },
-        {
-          Timber.d("Completed")
-        })
-  }
-
-  private fun getPokemonList() {
-    viewModel!!.listPokemon.observe(viewLifecycleOwner) { pokemonResponse ->
+    viewModel.getPokemon().observe(viewLifecycleOwner) { pokemonResponse ->
       when (pokemonResponse) {
         is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
         is Resource.Success -> {
           binding.progressBar.visibility = View.GONE
-          Timber.d("Fragment" + pokemonResponse.data.toString())
           adapter.setListPokemon(pokemonResponse.data)
           adapter.notifyDataSetChanged()
-          (view?.parent as? ViewGroup)?.doOnPreDraw {
+          (view.parent as ViewGroup).doOnPreDraw {
             startPostponedEnterTransition()
           }
           showRv()
@@ -73,6 +60,34 @@ class PokemonFragment : Fragment() {
           Toast.makeText(requireContext(), "Error occurred", Toast.LENGTH_SHORT).show()
         }
       }
+
+    }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    disposable.dispose()
+  }
+
+  private fun getPokemonList() {
+    viewModel.listPokemon.observe(viewLifecycleOwner) { pokemonResponse ->
+//      when (pokemonResponse) {
+//        is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
+//        is Resource.Success -> {
+//          binding.progressBar.visibility = View.GONE
+//          adapter.setListPokemon(pokemonResponse.data)
+//          adapter.notifyDataSetChanged()
+//          (view?.parent as? ViewGroup)?.doOnPreDraw {
+//            startPostponedEnterTransition()
+//          }
+//          showRv()
+//        }
+//        is Resource.Error -> {
+//          binding.progressBar.visibility = View.GONE
+//          Toast.makeText(requireContext(), "Error occurred", Toast.LENGTH_SHORT).show()
+//        }
+//      }
+//    }
     }
   }
 
@@ -80,13 +95,18 @@ class PokemonFragment : Fragment() {
     binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
     binding.recyclerView.setHasFixedSize(true)
     binding.recyclerView.adapter = adapter
-    adapter.setOnItemClickCallback(object : OnItemClickCallback {
-      override fun onItemClicked(data: PokemonModel) {
-//        val bundle = Bundle()
-//        val id = getIdFromUrl(data.results.).toInt()
-//        bundle.putInt(Constant.EXTRA_POKEMON_ID, id)
-//        Navigation.findNavController(requireView()).navigate(R.id.detailPokemonFragment, bundle)
-      }
-    })
+    adapter.clickListener = { data: ResultModel, imageView: ImageView ->
+      val bundle = Bundle()
+      val id = getIdFromUrl(data.url).toInt()
+      bundle.putInt(Constant.EXTRA_POKEMON_ID, id)
+      val extras =
+        FragmentNavigatorExtras(imageView to requireContext().resources.getString(string.transition_to_detail))
+      findNavController().navigate(
+        R.id.detailPokemonFragment,
+        bundle,
+        null,
+        extras
+      )
+    }
   }
 }

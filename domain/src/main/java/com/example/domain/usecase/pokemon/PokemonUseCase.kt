@@ -11,5 +11,5 @@ interface PokemonUseCase {
   fun getDetailPokemon(id: Int): LiveData<Resource<DetailPokemonModel>>
   val caughtPokemon: LiveData<List<DetailPokemonModel>>
   fun setCaughtPokemon(pokemonEntity: DetailPokemonModel, state: Boolean, nickname: String)
-  fun getObservable(): Flowable<PokemonModel>
+  fun getObservable(): Flowable<Resource<PokemonModel>>
 }

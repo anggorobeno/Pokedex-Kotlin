@@ -1,5 +1,6 @@
 package com.example.data
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.data.local.LocalDataSource
@@ -17,6 +18,8 @@ import com.example.domain.utils.Resource
 import com.example.utils.AppExecutors
 import io.reactivex.BackpressureStrategy.BUFFER
 import io.reactivex.Flowable
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,12 +27,19 @@ open class PokemonRepository @Inject constructor(
   private val remoteDataSource: RemoteDataSource, private val localDataSource: LocalDataSource,
   private val appExecutors: AppExecutors
 ) : IPokemonRepository {
-  override fun getListPokemonObservable(): Flowable<PokemonModel> {
-    return remoteDataSource.getListPokemonObservable()
+  @SuppressLint("CheckResult")
+  override fun getListPokemonObservable(): Flowable<Resource<PokemonModel>> {
+    val subject = BehaviorSubject.createDefault<Resource<PokemonModel>>(Resource.Loading(null))
+    remoteDataSource.getListPokemonObservable()
       .map {
         PokemonResponse.transform(it)
       }
-      .toFlowable(BUFFER)
+      .subscribe({ value ->
+        subject.onNext(Resource.Success(value))
+      }, { error ->
+        subject.onNext(Resource.Error(error.localizedMessage))
+      })
+    return subject.toFlowable(BUFFER)
   }
 
   override fun listPokemon(): LiveData<Resource<PokemonModel>> =
@@ -42,7 +52,7 @@ open class PokemonRepository @Inject constructor(
           item.forEach {
             transformedList.add(PokemonEntity.transform(it))
           }
-          Timber.d (message = "a $transformedList")
+          Timber.d(message = "a $transformedList")
           PokemonModel(
             null,
             null,

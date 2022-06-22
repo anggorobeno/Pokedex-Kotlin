@@ -3,6 +3,7 @@ package com.example.pokedex.ui.adapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -21,17 +22,12 @@ import timber.log.Timber
 
 class PokemonAdapter : Adapter<ViewHolder>() {
   private val listPokemon = ArrayList<ResultModel>()
-  private var onItemClickCallback: OnItemClickCallback? = null
-  fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback?) {
-    this.onItemClickCallback = onItemClickCallback
-  }
+  var clickListener: ((ResultModel, ImageView) -> Unit)? = null
 
   fun setListPokemon(data: PokemonModel?) {
     this.listPokemon.clear()
-    this.listPokemon.addAllWhatIfNotNull(data?.results) {
-
-    }
-    Timber.d(listPokemon.toString())
+    this.listPokemon.addAll(data!!.results)
+    Timber.d(data.toString())
 
   }
 
@@ -63,25 +59,12 @@ class PokemonAdapter : Adapter<ViewHolder>() {
         binding.ivPokeball
       )
       itemView.setOnClickListener {
-        val bundle = Bundle()
-        bundle.putInt(Constant.EXTRA_POKEMON_ID, id.toInt())
-        val extras =
-          FragmentNavigatorExtras(binding.ivPokemon to itemView.context.resources.getString(R.string.transition_to_detail))
-        itemView.findNavController().navigate(
-          R.id.detailPokemonFragment,
-          bundle,
-          null,
-          extras
-        )
+        clickListener?.invoke(pokemon, binding.ivPokemon)
       }
 
 //      Glide.with(itemView)
 //        .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png")
 //        .into(binding.ivPokemon)
     }
-  }
-
-  interface OnItemClickCallback {
-    fun onItemClicked(data: PokemonModel)
   }
 }

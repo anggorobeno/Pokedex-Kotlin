@@ -1,6 +1,7 @@
 package com.example.pokedex.ui.listpokemon
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
 import com.example.domain.model.PokemonModel
 import com.example.domain.usecase.pokemon.PokemonUseCase
@@ -16,8 +17,7 @@ class PokemonViewModel @Inject constructor(private val useCase: PokemonUseCase) 
   val listPokemon: LiveData<Resource<PokemonModel>>
     get() = useCase.listPokemon()
 
-  fun getPokemon(): Flowable<PokemonModel> {
-    return useCase.getObservable()
-
+  fun getPokemon(): LiveData<Resource<PokemonModel>> {
+    return LiveDataReactiveStreams.fromPublisher(useCase.getObservable())
   }
 }

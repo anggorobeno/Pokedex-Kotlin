@@ -11,5 +11,5 @@ interface IPokemonRepository {
   fun getDetailPokemon(id: Int): LiveData<Resource<DetailPokemonModel>>
   val caughtPokemon: LiveData<List<DetailPokemonModel>>
   fun setCaughtPokemon(pokemonEntity: DetailPokemonModel, state: Boolean, nickname: String)
-  fun getListPokemonObservable(): Flowable<PokemonModel>
+  fun getListPokemonObservable(): Flowable<Resource<PokemonModel>>
 }

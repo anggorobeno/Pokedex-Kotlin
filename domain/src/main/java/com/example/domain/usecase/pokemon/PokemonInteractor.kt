@@ -12,7 +12,7 @@ class PokemonInteractor(private val repo: IPokemonRepository) : PokemonUseCase {
     return repo.listPokemon()
   }
 
-  override fun getObservable(): Flowable<PokemonModel>{
+  override fun getObservable(): Flowable<Resource<PokemonModel>> {
     return repo.getListPokemonObservable()
   }
 
