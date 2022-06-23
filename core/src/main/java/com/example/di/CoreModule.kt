@@ -1,6 +1,7 @@
 package com.example.di
 
 import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.core.BuildConfig
 import com.example.data.local.room.PokemonDB
 import com.example.data.local.room.PokemonDB.Companion.getInstance
@@ -29,6 +30,7 @@ object CoreModule {
   @Provides fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
     return if (BuildConfig.DEBUG) {
       OkHttpClient.Builder()
+        .addInterceptor(ChuckerInterceptor(context))
         .build()
     } else {
       OkHttpClient.Builder()

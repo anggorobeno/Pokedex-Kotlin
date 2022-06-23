@@ -19,6 +19,7 @@ import com.example.pokedex.R.string
 import com.example.pokedex.databinding.FragmentPokemonBinding
 import com.example.pokedex.ui.adapter.PokemonAdapter
 import com.example.pokedex.utils.Constant
+import com.example.pokedex.utils.EndlessRecyclerOnScrollListener
 import com.example.pokedex.utils.Helper.getIdFromUrl
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.CompositeDisposable
@@ -30,6 +31,7 @@ class PokemonFragment : Fragment() {
   private val binding get() = _binding!!
   private val disposable = CompositeDisposable()
   private val adapter = PokemonAdapter()
+  var currentPage = 1
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -43,17 +45,21 @@ class PokemonFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     postponeEnterTransition()
     getPokemonList()
-    viewModel.getPokemon().observe(viewLifecycleOwner) { pokemonResponse ->
+    showRv()
+    viewModel.pokemonList.observe(viewLifecycleOwner) { pokemonResponse ->
       when (pokemonResponse) {
         is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
         is Resource.Success -> {
           binding.progressBar.visibility = View.GONE
           adapter.setListPokemon(pokemonResponse.data)
-          adapter.notifyDataSetChanged()
+          pokemonResponse.data?.results?.size?.let {
+            adapter.notifyItemRangeInserted(adapter.itemCount,
+              it
+            )
+          }
           (view.parent as ViewGroup).doOnPreDraw {
             startPostponedEnterTransition()
           }
-          showRv()
         }
         is Resource.Error -> {
           binding.progressBar.visibility = View.GONE
@@ -66,7 +72,7 @@ class PokemonFragment : Fragment() {
 
   override fun onDestroy() {
     super.onDestroy()
-    disposable.dispose()
+    viewModel.disposable.dispose()
   }
 
   private fun getPokemonList() {
@@ -95,6 +101,12 @@ class PokemonFragment : Fragment() {
     binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
     binding.recyclerView.setHasFixedSize(true)
     binding.recyclerView.adapter = adapter
+    binding.recyclerView.addOnScrollListener(object: EndlessRecyclerOnScrollListener(){
+      override fun onLoadMore() {
+        currentPage++
+        viewModel.loadListPokemon(currentPage)
+      }
+    })
     adapter.clickListener = { data: ResultModel, imageView: ImageView ->
       val bundle = Bundle()
       val id = getIdFromUrl(data.url).toInt()

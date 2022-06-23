@@ -16,10 +16,7 @@ import com.example.domain.model.ResultModel
 import com.example.domain.repository.IPokemonRepository
 import com.example.domain.utils.Resource
 import com.example.utils.AppExecutors
-import io.reactivex.BackpressureStrategy.BUFFER
-import io.reactivex.Flowable
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.Observable
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -28,18 +25,10 @@ open class PokemonRepository @Inject constructor(
   private val appExecutors: AppExecutors
 ) : IPokemonRepository {
   @SuppressLint("CheckResult")
-  override fun getListPokemonObservable(): Flowable<Resource<PokemonModel>> {
-    val subject = BehaviorSubject.createDefault<Resource<PokemonModel>>(Resource.Loading(null))
-    remoteDataSource.getListPokemonObservable()
-      .map {
-        PokemonResponse.transform(it)
-      }
-      .subscribe({ value ->
-        subject.onNext(Resource.Success(value))
-      }, { error ->
-        subject.onNext(Resource.Error(error.localizedMessage))
-      })
-    return subject.toFlowable(BUFFER)
+  override fun getListPokemonObservable(page: Int): Observable<PokemonModel> {
+    return remoteDataSource.getListPokemonObservable(page).map {
+      PokemonResponse.transform(it)
+    }
   }
 
   override fun listPokemon(): LiveData<Resource<PokemonModel>> =
@@ -52,7 +41,6 @@ open class PokemonRepository @Inject constructor(
           item.forEach {
             transformedList.add(PokemonEntity.transform(it))
           }
-          Timber.d(message = "a $transformedList")
           PokemonModel(
             null,
             null,

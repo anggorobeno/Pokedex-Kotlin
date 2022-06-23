@@ -9,12 +9,14 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.bumptech.glide.Glide
 import com.example.domain.model.PokemonModel
 import com.example.domain.model.ResultModel
 import com.example.pokedex.R
 import com.example.pokedex.databinding.PokemonListBinding
 import com.example.pokedex.ui.adapter.PokemonAdapter.ViewHolder
 import com.example.pokedex.utils.Constant
+import com.example.pokedex.utils.Helper
 import com.example.pokedex.utils.Helper.getIdFromUrl
 import com.example.pokedex.utils.ImageUtil
 import com.skydoves.whatif.addAllWhatIfNotNull
@@ -25,10 +27,8 @@ class PokemonAdapter : Adapter<ViewHolder>() {
   var clickListener: ((ResultModel, ImageView) -> Unit)? = null
 
   fun setListPokemon(data: PokemonModel?) {
-    this.listPokemon.clear()
     this.listPokemon.addAll(data!!.results)
     Timber.d(data.toString())
-
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -52,16 +52,16 @@ class PokemonAdapter : Adapter<ViewHolder>() {
       val id = getIdFromUrl(pokemon.url)
       ViewCompat.setTransitionName(binding.ivPokemon, id)
       binding.tvPokemonName.text = pokemon.name
-      ImageUtil.generateImageBackgroundPalette(
+      ImageUtil.bindImageWithPalette(
         itemView.context,
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+        Helper.getImage(id.toInt()),
         binding.ivPokemon,
-        binding.ivPokeball
+        binding.cardPokemon
       )
       itemView.setOnClickListener {
         clickListener?.invoke(pokemon, binding.ivPokemon)
       }
-
+//
 //      Glide.with(itemView)
 //        .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png")
 //        .into(binding.ivPokemon)

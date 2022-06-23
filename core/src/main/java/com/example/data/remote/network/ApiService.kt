@@ -25,6 +25,6 @@ interface ApiService {
 
   @GET("api/v2/pokemon") fun getPokemonListObservable(
     @Query("offset") offset: Int,
-    @Query("limit") limit: Int
+//    @Query("limit") limit: Int
   ): Observable<PokemonResponse>
 }

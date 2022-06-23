@@ -8,7 +8,11 @@ import io.ak1.BubbleTabBar
 
 object Helper {
   @JvmStatic fun getIdFromUrl(url: String): String {
-    return url.substring(url.lastIndexOf('/') - 2, url.lastIndexOf('/'))
+    return url.split("/".toRegex()).dropLast(1).last()
+  }
+
+  fun getImage(id: Int): String {
+    return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png"
   }
 
   @JvmStatic fun getWeight(weight: Double): String {

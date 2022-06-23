@@ -20,9 +20,14 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.example.pokedex.R
 import com.example.pokedex.ui.detailpokemon.DetailPokemonFragment
+import com.github.florent37.glidepalette.BitmapPalette
+import com.github.florent37.glidepalette.GlidePalette
+import com.google.android.material.card.MaterialCardView
 import com.skydoves.rainbow.rainbow
 import com.skydoves.whatif.whatIf
 import com.skydoves.whatif.whatIfNotNull
+import timber.log.Timber
+import timber.log.Timber.Forest
 
 object ImageUtil {
   fun generateBackgroundPalette(
@@ -47,9 +52,43 @@ object ImageUtil {
 
         override fun onLoadCleared(placeholder: Drawable?) {
           fragment.startPostponedEnterTransition()
-
         }
       })
+  }
+
+  fun bindImageWithPalette(
+    context: Context,fragment:Fragment, url: String, targetView: ImageView, targetBackground: View
+  ) {
+    Glide.with(context)
+      .load(url)
+      .listener(
+        GlidePalette.with(url)
+          .use(BitmapPalette.Profile.MUTED_LIGHT)
+          .intoCallBack { palette ->
+            val rgb = palette?.dominantSwatch?.rgb
+            if (rgb != null && rgb != -15724528) {
+              targetBackground.setBackgroundColor(rgb)
+            }
+            fragment.startPostponedEnterTransition()
+          }.crossfade(true)
+      ).into(targetView)
+  }
+
+  fun bindImageWithPalette(
+    context: Context, url: String, targetView: ImageView, cardView: MaterialCardView
+  ) {
+    Glide.with(context)
+      .load(url)
+      .listener(
+        GlidePalette.with(url)
+          .use(BitmapPalette.Profile.MUTED_LIGHT)
+          .intoCallBack { palette ->
+            val rgb = palette?.dominantSwatch?.rgb
+            if (rgb != null && rgb != -15724528) {
+              cardView.setCardBackgroundColor(rgb)
+            }
+          }.crossfade(true)
+      ).into(targetView)
   }
 
   fun generateImageBackgroundPalette(
@@ -66,6 +105,7 @@ object ImageUtil {
           imageSource.setImageBitmap(resource)
           val palette = Palette.from(resource).generate().dominantSwatch
           palette?.rgb?.let {
+            Timber.d(it.toString())
             targetSource.setColorFilter(it)
           }
         }

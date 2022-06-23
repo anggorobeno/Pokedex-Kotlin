@@ -5,15 +5,15 @@ import com.example.domain.model.DetailPokemonModel
 import com.example.domain.model.PokemonModel
 import com.example.domain.repository.IPokemonRepository
 import com.example.domain.utils.Resource
-import io.reactivex.Flowable
+import io.reactivex.Observable
 
 class PokemonInteractor(private val repo: IPokemonRepository) : PokemonUseCase {
   override fun listPokemon(): LiveData<Resource<PokemonModel>> {
     return repo.listPokemon()
   }
 
-  override fun getObservable(): Flowable<Resource<PokemonModel>> {
-    return repo.getListPokemonObservable()
+  override fun getObservable(page: Int): Observable<PokemonModel> {
+    return repo.getListPokemonObservable(page)
   }
 
   override fun getDetailPokemon(id: Int): LiveData<Resource<DetailPokemonModel>> {

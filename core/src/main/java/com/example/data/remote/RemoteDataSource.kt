@@ -23,8 +23,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
-  fun getListPokemonObservable(): Observable<PokemonResponse> {
-    return apiService.getPokemonListObservable(20, 20)
+  fun getListPokemonObservable(page: Int): Observable<PokemonResponse> {
+    return apiService.getPokemonListObservable(page)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
   }

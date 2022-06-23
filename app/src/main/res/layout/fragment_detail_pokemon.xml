@@ -55,7 +55,7 @@
         android:layout_marginStart="16dp"
         android:textSize="26sp"
         android:fontFamily="@font/poppin_semi_bold"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         tools:text="Charizard"
         app:layout_constraintTop_toBottomOf="@id/ic_back"
         app:layout_constraintStart_toStartOf="parent" />
@@ -69,7 +69,7 @@
         android:layout_marginEnd="16dp"
         android:textSize="18sp"
         android:fontFamily="@font/poppin_semi_bold"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         tools:text="001"
         app:layout_constraintTop_toBottomOf="@id/ic_back"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -94,13 +94,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:textSize="22sp"
         android:fontFamily="@font/poppin_semi_bold"
-        android:textColor="@color/black"
-        tools:text="1.7M"
-        app:layout_constraintTop_toTopOf="@id/view_background"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toStartOf="@id/view_line"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/view_line"/>
+        app:layout_constraintTop_toTopOf="@id/view_background"
+        tools:text="1.7M"
+        />
 
     <!-- Text Height -->
     <TextView
@@ -119,12 +120,12 @@
     <View
         android:id="@+id/view_line"
         android:layout_width="2dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="0dp"
         android:background="@drawable/line"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_weight"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/view_background" />
+        app:layout_constraintTop_toTopOf="@id/tv_pokemon_height" />
 
     <!-- Pokemon Weight -->
     <TextView
@@ -132,13 +133,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:textSize="22sp"
         android:fontFamily="@font/poppin_semi_bold"
-        android:textColor="@color/black"
-        tools:text="70 Kg"
-        app:layout_constraintTop_toTopOf="@id/view_background"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/view_line"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="@id/view_background"
+        tools:text="70 Kg"
+        />
 
     <!-- Text Weight -->
     <TextView

@@ -18,12 +18,15 @@ import com.example.pokedex.databinding.FragmentDetailPokemonBinding
 import com.example.pokedex.utils.BaseDialog
 import com.example.pokedex.utils.BaseDialog.DialogCallback
 import com.example.pokedex.utils.Constant
+import com.example.pokedex.utils.Helper
 import com.example.pokedex.utils.Helper.getHeight
 import com.example.pokedex.utils.Helper.getWeight
 import com.example.pokedex.utils.Helper.idConverter
 import com.example.pokedex.utils.ImageUtil
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
+import timber.log.Timber.Forest
 
 @AndroidEntryPoint
 class DetailPokemonFragment : Fragment() {
@@ -111,16 +114,17 @@ class DetailPokemonFragment : Fragment() {
 
   private fun showDetailPokemon(id: Int) {
     viewModel.setPokemonId(id)
+    Timber.d(id.toString())
     viewModel.detailPokemon.observe(viewLifecycleOwner) { detailPokemonResponse: Resource<DetailPokemonModel>? ->
       if (detailPokemonResponse != null) {
         when (detailPokemonResponse) {
           is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
           is Resource.Success -> {
             binding.progressBar.visibility = View.GONE
-            ImageUtil.generateBackgroundPalette(
+            ImageUtil.bindImageWithPalette(
               requireContext(),
               this,
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+              Helper.getImage(id),
               binding.ivPokemon,
               binding.actDetail
             )

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.domain.model.DetailPokemonModel
 import com.example.pokedex.databinding.PokemonListBinding
 import com.example.pokedex.ui.adapter.CaughtPokemonAdapter.ViewHolder
+import com.example.pokedex.utils.Helper
 import com.example.pokedex.utils.ImageUtil
 
 class CaughtPokemonAdapter : Adapter<ViewHolder>() {
@@ -49,11 +50,11 @@ class CaughtPokemonAdapter : Adapter<ViewHolder>() {
         || pokemon.nickname == ""
       ) pokemon.name else pokemon.nickname!!
       binding.tvPokemonName.text = name
-      ImageUtil.generateImageBackgroundPalette(
+      ImageUtil.bindImageWithPalette(
         itemView.context,
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemon.id + ".png",
+        Helper.getImage(pokemon.id.toInt()),
         binding.ivPokemon,
-        binding.ivPokeball
+        binding.cardPokemon
       )
     }
   }
