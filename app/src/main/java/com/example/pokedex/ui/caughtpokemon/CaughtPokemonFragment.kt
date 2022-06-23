@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -15,6 +16,8 @@ import com.example.pokedex.ui.adapter.CaughtPokemonAdapter
 import com.example.pokedex.ui.adapter.CaughtPokemonAdapter.OnItemClickCallback
 import com.example.pokedex.utils.Constant
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
+import timber.log.Timber.Forest
 
 @AndroidEntryPoint
 class CaughtPokemonFragment : Fragment() {
@@ -38,10 +41,12 @@ class CaughtPokemonFragment : Fragment() {
   }
 
   private fun getCaughtPokemonList() {
+    showRv()
     viewModel.caughtPokemon.observe(viewLifecycleOwner) { caughtPokemon: List<DetailPokemonModel> ->
+      Timber.d(caughtPokemon.toString())
       adapter.setListPokemon(caughtPokemon)
+      binding.llEmptyState.isVisible = caughtPokemon.isEmpty() || adapter.itemCount <= 0
       adapter.notifyDataSetChanged()
-      showRv()
     }
   }
 

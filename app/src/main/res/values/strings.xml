@@ -7,4 +7,6 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
   <string name="transition_to_detail">pokemon_detail_image</string>
+  <string name="empty_caught_pokemon_subtitle">Catch a pokemon and it will be shown here</string>
+  <string name="empty_caught_pokemon_title">Empty Caught Pokemon</string>
 </resources>
