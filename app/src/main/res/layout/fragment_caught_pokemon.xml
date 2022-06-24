@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 <data>
     <import type="java.util.List" />
+    <import type="android.view.View"/>
     <variable name="viewModel" type="com.example.pokedex.ui.caughtpokemon.CaughtPokemonViewModel"/>
-    <variable name="pokemon" type="com.example.domain.model.DetailPokemonModel"/>
+    <variable name="listPokemon" type="java.util.List&lt;com.example.domain.model.DetailPokemonModel&gt;"/>
 </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -16,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:visibility="@{listPokemon.size() > 0 ? View.GONE: View.VISIBLE}"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -7,6 +7,8 @@ import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.bumptech.glide.Glide
@@ -22,13 +24,24 @@ import com.example.pokedex.utils.ImageUtil
 import com.skydoves.whatif.addAllWhatIfNotNull
 import timber.log.Timber
 
-class PokemonAdapter : Adapter<ViewHolder>() {
+class PokemonAdapter : ListAdapter<ResultModel,ViewHolder>(PokemonDiffUtil()) {
+  companion object{
+    class PokemonDiffUtil: DiffUtil.ItemCallback<ResultModel>() {
+      override fun areItemsTheSame(oldItem: ResultModel, newItem: ResultModel): Boolean {
+        return oldItem == newItem
+      }
+      override fun areContentsTheSame(oldItem: ResultModel, newItem: ResultModel): Boolean {
+        return oldItem.id == newItem.id
+      }
+    }
+  }
   private val listPokemon = ArrayList<ResultModel>()
   var clickListener: ((ResultModel, ImageView) -> Unit)? = null
 
   fun setListPokemon(data: PokemonModel?) {
     this.listPokemon.addAll(data!!.results)
-    Timber.d(data.toString())
+    Timber.d(listPokemon.toString())
+    submitList(listPokemon)
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

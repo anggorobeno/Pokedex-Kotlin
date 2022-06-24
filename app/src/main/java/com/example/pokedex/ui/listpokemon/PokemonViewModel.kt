@@ -1,5 +1,6 @@
 package com.example.pokedex.ui.listpokemon
 
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,8 +22,8 @@ class PokemonViewModel @Inject constructor(private val useCase: PokemonUseCase) 
   val listPokemon: LiveData<Resource<PokemonModel>>
     get() = useCase.listPokemon()
 
-
-  val _pokemonList = MutableLiveData<Resource<PokemonModel>>(Resource.Loading(null))
+  var scrollState: Parcelable? = null
+  val _pokemonList = MutableLiveData<Resource<PokemonModel>>()
   val pokemonList: LiveData<Resource<PokemonModel>> = _pokemonList
 
   init {
@@ -38,6 +39,7 @@ class PokemonViewModel @Inject constructor(private val useCase: PokemonUseCase) 
         }
 
         override fun onNext(t: PokemonModel) {
+          Timber.d("OnNExt")
           _pokemonList.postValue(Resource.Success(t))
         }
 

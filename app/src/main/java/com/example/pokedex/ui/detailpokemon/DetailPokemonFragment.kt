@@ -14,6 +14,7 @@ import com.example.domain.model.DetailPokemonModel
 import com.example.domain.utils.Resource
 import com.example.pokedex.R
 import com.example.pokedex.R.layout
+import com.example.pokedex.R.string
 import com.example.pokedex.databinding.FragmentDetailPokemonBinding
 import com.example.pokedex.utils.BaseDialog
 import com.example.pokedex.utils.BaseDialog.DialogCallback
@@ -54,7 +55,7 @@ class DetailPokemonFragment : Fragment() {
     postponeEnterTransition()
     val id = requireArguments().getInt(Constant.EXTRA_POKEMON_ID)
     showDetailPokemon(id)
-    binding.icBack.setOnClickListener {
+    binding.tbDetail.icBack.setOnClickListener {
       Navigation.findNavController(requireView()).navigateUp()
     }
   }
@@ -66,9 +67,9 @@ class DetailPokemonFragment : Fragment() {
           if (detailPokemonEntityResource.data != null) {
             val state = detailPokemonEntityResource.data!!.isCaught
             if (state) {
-              binding.tvCatchPokemon.text = "Release!"
+              binding.ivCatch.setImageResource(R.drawable.ic_pokeball)
             } else {
-              binding.tvCatchPokemon.text = "Catch!"
+              binding.ivCatch.setImageResource(R.drawable.ic_pokeball_colour)
             }
             var name = if (detailPokemonEntityResource.data!!.nickname == null
               || detailPokemonEntityResource.data!!.nickname == ""
@@ -122,7 +123,7 @@ class DetailPokemonFragment : Fragment() {
           is Resource.Success -> {
             binding.progressBar.visibility = View.GONE
             ImageUtil.bindImageWithPalette(
-              requireContext(),
+              requireActivity(),
               this,
               Helper.getImage(id),
               binding.ivPokemon,
@@ -138,7 +139,8 @@ class DetailPokemonFragment : Fragment() {
             binding.tvPokemonWeight.text = getWeight(
               detailPokemonResponse.data!!.weight.toDouble()
             )
-            binding.tvPokemonId.text = idConverter(id)
+//            binding.tvPokemonId.text = idConverter(id)
+            binding.tbDetail.pokemonItem = detailPokemonResponse.data
           }
           is Resource.Error -> {
             binding.progressBar.visibility = View.GONE

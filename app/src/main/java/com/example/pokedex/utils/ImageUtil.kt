@@ -7,7 +7,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.palette.graphics.Palette
@@ -68,8 +70,16 @@ object ImageUtil {
             val rgb = palette?.dominantSwatch?.rgb
             if (rgb != null && rgb != -15724528) {
               targetBackground.setBackgroundColor(rgb)
+              Timber.d(context.toString())
+              if (context is AppCompatActivity) {
+                context.window.apply {
+                  addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                  statusBarColor = rgb
+                }
+              }
             }
             fragment.startPostponedEnterTransition()
+
           }.crossfade(true)
       ).into(targetView)
   }

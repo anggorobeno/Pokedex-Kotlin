@@ -12,12 +12,14 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
+import androidx.navigation.plusAssign
 import androidx.navigation.ui.AppBarConfiguration.Builder
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import com.example.pokedex.R.id
 import com.example.pokedex.databinding.ActivityPokemonBinding
 import com.example.pokedex.utils.Helper.onNavDestinationSelected
+import com.example.pokedex.utils.KeepStateNavigator
 import com.skydoves.whatif.whatIfNotNull
 
 @AndroidEntryPoint
@@ -40,6 +42,8 @@ class PokemonActivity : AppCompatActivity() {
     _binding = ActivityPokemonBinding.inflate(layoutInflater)
     setContentView(binding.root)
     supportActionBar!!.hide()
+    val navHostFragment =
+      supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_pokemon)!!
     navController = findNavController(id.nav_host_fragment_activity_pokemon)
   }
 }

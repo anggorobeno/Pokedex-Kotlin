@@ -45,7 +45,8 @@ class CaughtPokemonFragment : Fragment() {
     viewModel.caughtPokemon.observe(viewLifecycleOwner) { caughtPokemon: List<DetailPokemonModel> ->
       Timber.d(caughtPokemon.toString())
       adapter.setListPokemon(caughtPokemon)
-      binding.llEmptyState.isVisible = caughtPokemon.isEmpty() || adapter.itemCount <= 0
+      binding.listPokemon = caughtPokemon
+//      binding.llEmptyState.isVisible = caughtPokemon.isEmpty() || adapter.itemCount <= 0
       adapter.notifyDataSetChanged()
     }
   }

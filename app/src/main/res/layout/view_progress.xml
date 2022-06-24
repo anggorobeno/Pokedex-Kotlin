@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+  <data>
+    <variable
+        name="stats"
+        type="String"
+        />
+  </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+  <TextView
+      android:id="@+id/tv_stats"
+      android:layout_width="35dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/dimens_16"
+      tools:text="ATK"
+      android:text="@{stats}"
+      android:textColor="@color/white"
+      app:layout_constraintEnd_toStartOf="@id/progress_view_stats"
+      app:layout_constraintBottom_toBottomOf="@+id/progress_view_stats"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@id/progress_view_stats"
+      />
+  <com.skydoves.progressview.ProgressView
+      android:id="@+id/progress_view_stats"
+      android:layout_width="0dp"
+      android:layout_height="35dp"
+      android:layout_margin="@dimen/dimens_16"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="12dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toEndOf="@id/tv_stats"
+      app:progressView_progress="40"
+      />
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
