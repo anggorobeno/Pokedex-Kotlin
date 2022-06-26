@@ -13,6 +13,8 @@
   <string name="stats_atk">ATK</string>
   <string name="stats_def">DEF</string>
   <string name="stats_spd">SPD</string>
+  <string name="stats_sattack">SATK</string>
+  <string name="stats_sdef">SDEF</string>
   <string name="stats_exp">EXP</string>
   <string name="base_stats_title">Base Stats</string>
 </resources>

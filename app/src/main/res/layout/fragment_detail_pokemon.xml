@@ -4,10 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="java.util.List" />
+
+
         <variable
             name="stats"
             type="String"
             />
+        <variable
+            name="baseStat"
+            type="int"
+            />
+        <variable
+            name="listPokemonStats"
+            type="java.util.List&lt;com.example.domain.model.PokemonStatsModel&gt;"/>
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/act_detail"
@@ -213,6 +223,7 @@
         layout="@layout/view_progress"
         android:id="@+id/view_pv_hp"
         app:stats="@{@string/stats_hp}"
+        app:baseStat="@{listPokemonStats[0].baseStats}"
         android:layout_width="match_parent"
         app:layout_constraintTop_toBottomOf="@id/tv_base_stats"
         android:layout_height="wrap_content"
@@ -222,6 +233,7 @@
         android:id="@+id/view_pv_atk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:baseStat="@{listPokemonStats[1].baseStats}"
         app:stats="@{@string/stats_atk}"
         app:layout_constraintTop_toBottomOf="@id/view_pv_hp"/>
     <include
@@ -229,6 +241,7 @@
         android:id="@+id/view_pv_def"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:baseStat="@{listPokemonStats[2].baseStats}"
         app:stats="@{@string/stats_def}"
         app:layout_constraintTop_toBottomOf="@id/view_pv_atk"/>
     <include
@@ -236,14 +249,16 @@
         android:id="@+id/view_spd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:stats="@{@string/stats_spd}"
+        app:baseStat="@{listPokemonStats[3].baseStats}"
+        app:stats="@{@string/stats_sattack}"
         app:layout_constraintTop_toBottomOf="@id/view_pv_def"/>
     <include
         layout="@layout/view_progress"
         android:id="@+id/view_progress_exp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:stats="@{@string/stats_exp}"
+        app:baseStat="@{listPokemonStats[4].baseStats}"
+        app:stats="@{@string/stats_sdef}"
         app:layout_constraintTop_toBottomOf="@id/view_spd"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

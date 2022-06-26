@@ -57,4 +57,7 @@ object Helper {
       false
     }
   }
+  fun convertIntToFloat(input: Int): Float{
+    return input.toFloat()
+  }
 }

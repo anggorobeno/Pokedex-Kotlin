@@ -8,6 +8,14 @@
         name="stats"
         type="String"
         />
+    <variable
+        name="baseStat"
+        type="int"
+        />
+    <variable
+        name="Converter"
+        type="com.example.pokedex.utils.Helper"
+        />
   </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -36,8 +44,8 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintBottom_toBottomOf="parent"
+      app:progressValue="@{baseStat}"
       app:layout_constraintStart_toEndOf="@id/tv_stats"
-      app:progressView_progress="40"
       />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

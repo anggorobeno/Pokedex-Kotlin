@@ -139,8 +139,9 @@ class DetailPokemonFragment : Fragment() {
             binding.tvPokemonWeight.text = getWeight(
               detailPokemonResponse.data!!.weight.toDouble()
             )
-//            binding.tvPokemonId.text = idConverter(id)
             binding.tbDetail.pokemonItem = detailPokemonResponse.data
+            binding.baseStat = detailPokemonResponse.data!!.stats?.get(0)?.baseStats!!
+            binding.listPokemonStats = detailPokemonResponse.data?.stats
           }
           is Resource.Error -> {
             binding.progressBar.visibility = View.GONE

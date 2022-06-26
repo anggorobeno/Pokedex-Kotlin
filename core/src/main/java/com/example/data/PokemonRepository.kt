@@ -6,6 +6,8 @@ import androidx.lifecycle.Transformations
 import com.example.data.local.LocalDataSource
 import com.example.data.local.entity.DetailPokemonEntity
 import com.example.data.local.entity.PokemonEntity
+import com.example.data.local.entity.PokemonStatEntity
+import com.example.data.local.entity.PokemonStatsEntity
 import com.example.data.remote.RemoteDataSource
 import com.example.data.remote.network.ApiResponse
 import com.example.data.remote.response.DetailPokemonResponse
@@ -80,16 +82,8 @@ open class PokemonRepository @Inject constructor(
     ) {
       override fun loadFromDB(): LiveData<DetailPokemonModel> {
         return Transformations.map(localDataSource.getDetailPokemon(id)) {
-          it?.isCaught?.let { it1 ->
-            DetailPokemonModel(
-              it1,
-              it.id,
-              it.name,
-              it.height,
-              it.weight,
-              it.url,
-              it.nickname,
-            )
+          it?.let {
+            DetailPokemonEntity.transform(it)
           }
         }
       }
@@ -104,15 +98,8 @@ open class PokemonRepository @Inject constructor(
 
       override fun saveCallResult(data: DetailPokemonResponse?) {
         val pokemonEntities: MutableList<DetailPokemonEntity> = ArrayList()
-        val pokemon = DetailPokemonEntity(
-          false,
-          data!!.id!!,
-          data.name,
-          data.height,
-          data.weight,
-          data.url,
-        )
-        pokemonEntities.add(pokemon)
+        val pokemon = data?.let { DetailPokemonResponse.transform(it) }
+        pokemon?.let { pokemonEntities.add(it) }
         localDataSource.insertPokemonDetail(pokemonEntities)
       }
     }.asLiveData()
@@ -138,6 +125,18 @@ open class PokemonRepository @Inject constructor(
     state: Boolean,
     nickname: String
   ) {
+    val transformedList = arrayListOf<PokemonStatsEntity>()
+    pokemonEntity.stats?.forEach {
+      val _entity = PokemonStatEntity(
+        it.stat?.name,
+        it.stat?.url
+      )
+      val entity = PokemonStatsEntity(
+        it.baseStats,
+        _entity
+      )
+      transformedList.add(entity)
+    }
     val entity = DetailPokemonEntity(
       pokemonEntity.isCaught,
       pokemonEntity.id,
@@ -146,6 +145,7 @@ open class PokemonRepository @Inject constructor(
       pokemonEntity.weight,
       pokemonEntity.url,
       pokemonEntity.nickname,
+      transformedList
     )
     appExecutors.diskIO()
       .execute { localDataSource.setCaughtPokemon(entity, state, nickname) }

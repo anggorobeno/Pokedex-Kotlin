@@ -8,6 +8,8 @@ import javax.inject.Singleton
 import androidx.room.RoomDatabase
 import kotlin.jvm.Volatile
 import androidx.room.Room
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 
 @Database(
   entities = [PokemonEntity::class, DetailPokemonEntity::class],
@@ -15,6 +17,7 @@ import androidx.room.Room
   exportSchema = false
 )
 @Singleton
+@TypeConverters(com.example.utils.TypeConverter::class)
 abstract class PokemonDB : RoomDatabase() {
   abstract fun pokemonDao(): PokemonDao
 
